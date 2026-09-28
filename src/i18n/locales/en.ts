@@ -48,8 +48,6 @@ export const en = {
 	"settings.folders.search": "Search a vault folder…",
 	"settings.folders.add": "Add",
 	"settings.folders.empty": "No folder configured.",
-	"settings.folders.drag": "Drag to reorder",
-	"settings.folders.remove": "Remove",
 	"settings.folders.tableCount": { one: "{count} table", other: "{count} tables" },
 	"settings.folders.notFound": "not found",
 	"settings.others.heading": "Other options",

@@ -43,8 +43,6 @@ export const fr: Locale = {
 	"settings.folders.search": "Rechercher un dossier du coffre…",
 	"settings.folders.add": "Ajouter",
 	"settings.folders.empty": "Aucun dossier configuré.",
-	"settings.folders.drag": "Glisser pour réordonner",
-	"settings.folders.remove": "Retirer",
 	"settings.folders.tableCount": { one: "{count} table", other: "{count} tables" },
 	"settings.folders.notFound": "introuvable",
 	"settings.others.heading": "Autres options",

@@ -43,8 +43,6 @@ export const hi: Locale = {
 	"settings.folders.search": "वॉल्ट में फ़ोल्डर खोजें…",
 	"settings.folders.add": "जोड़ें",
 	"settings.folders.empty": "कोई फ़ोल्डर कॉन्फ़िगर नहीं है।",
-	"settings.folders.drag": "क्रम बदलने के लिए खींचें",
-	"settings.folders.remove": "हटाएँ",
 	"settings.folders.tableCount": { one: "{count} तालिका", other: "{count} तालिकाएँ" },
 	"settings.folders.notFound": "नहीं मिला",
 	"settings.others.heading": "अन्य विकल्प",

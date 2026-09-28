@@ -46,7 +46,7 @@ export function resolveCssColor(color: string): Rgb | null {
 }
 
 function resolveUncached(color: string): Rgb | null {
-	ctx ??= document.createElement("canvas").getContext("2d");
+	ctx ??= createEl("canvas").getContext("2d");
 	if (!ctx) return null;
 	ctx.fillStyle = "#000001";
 	ctx.fillStyle = color;

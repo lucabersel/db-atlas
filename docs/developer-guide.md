@@ -25,7 +25,7 @@ npm install
 npm run dev        # esbuild in watch mode
 npm run build      # type-check (tsc --noEmit) + production build
 npm test           # vitest
-npm run lint       # eslint
+npm run lint       # eslint, with Obsidian's official rules (eslint-plugin-obsidianmd)
 npm run bench      # layout and routing timings on generated schemas
 npm run gen:perf -- 1000   # write a 1000-table schema into test-vault/Perf1000
 ```
@@ -45,7 +45,7 @@ scripts/                benchmark (layout.bench.ts) and generated-schema tools
 docs/                   user guide, developer guide, specification (PROJECT.md), README screenshot
 styles.css              all plugin styles (.dba-* classes)
 esbuild.config.mjs      bundling, ELK worker embedding, copy to test-vault
-eslint.config.mjs       lint rules, including the "pure module" and "no Node API" rules
+eslint.config.mjs       Obsidian's official rules (same checks as the directory review) + project rules
 vitest.config.ts        unit tests; vitest.bench.config.ts for `npm run bench`
 manifest.json           Obsidian manifest; versions.json maps versions to minAppVersion
 version-bump.mjs        run by `npm version`
@@ -90,7 +90,7 @@ A module marked **pure** does not import `obsidian` (enforced by ESLint) and is 
 | File | Role |
 |---|---|
 | `main.ts` | `Plugin` subclass: loads/normalizes data, applies the language, registers view, ribbon, commands, settings tab and rename handler; opens the view in the requested location; `new-table` flow; debounced saving; ELK worker lifecycle. |
-| `settings.ts` | Settings tab: DB folder list (search with folder suggestions, drag to reorder with pointer events, remove), language, view location, template. Uses `SettingGroup` when available (Obsidian ≥ 1.11). |
+| `settings.ts` | Settings tab declared with `getSettingDefinitions()` (searchable in Obsidian's settings): native list of DB folders (add through a folder picker, drag to reorder, delete), language, view location, template. `getControlValue`/`setControlValue` map controls to `data.settings`. |
 | `data.ts` (pure) | Defaults and `normalizeData` (merges `data.json` with defaults, drops wrong types), folder path helpers, built-in template. |
 | `types.ts` (pure) | Shared data model: `Column`, `Table`, `Relation`, `Issue`, `Schema`, `DbAtlasData`. |
 
@@ -214,7 +214,7 @@ Positions go through `LayoutStore` and a debounced save (1 s, flushed on unload)
 
 - `src/i18n/locales/en.ts` is the reference: every key must exist there. Other files export a `Locale` (any subset; missing keys fall back to English).
 - Use `t(key, vars)` for every user-visible string. Placeholders are `{name}`; plural messages are objects keyed by `Intl.PluralRules` categories (`one`, `few`, `many`, …) and must have `other`.
-- `resolveLanguage(setting, appLanguage)` maps "auto" to Obsidian's language (`getLanguage()` from 1.8.7, otherwise `moment.locale()`), regional variants to the base language, unknown languages to English.
+- `resolveLanguage(setting, appLanguage)` maps "auto" to Obsidian's language (`getLanguage()`), regional variants to the base language, unknown languages to English.
 - `plugin.applyLanguage()` switches language at runtime: settings tab, views (`onLanguageChanged`) and ribbon update immediately; command names only after a restart.
 
 **Adding a language**: create `src/i18n/locales/<code>.ts` exporting a `Locale` with every key, add it to `LANGUAGES` in `src/i18n/index.ts` (name written in the language itself), run `npm test`: `tests/i18n.test.ts` fails if a key is missing or a placeholder differs from English.
@@ -230,7 +230,7 @@ Positions go through `LayoutStore` and a debounced save (1 s, flushed on unload)
 - **Text into the DOM** only via `textContent`, `setText` or `createEl({ text })`; never `innerHTML`.
 - **Several CSS classes**: pass an array (`cls: ["a", "b"]`). `createSvg` throws on a string with spaces; ESLint reports it.
 - **Styles** live in `styles.css`, classes prefixed `.dba-`, colours from Obsidian CSS variables. Inline styles only as CSS custom properties for dynamic values (`--dba-header-bg`, `--dba-tooltip-x`, …).
-- **Obsidian APIs**: read frontmatter from `metadataCache`; write notes with `vault.process` / `fileManager.processFrontMatter`; register events with `registerEvent`; use the element's own `doc`/`win` where it matters (popout windows); check newer APIs before using them (`typeof SettingGroup === "function"`), `minAppVersion` stays 1.5.7.
+- **Obsidian APIs**: read frontmatter from `metadataCache`; write notes with `vault.process` / `fileManager.processFrontMatter`; register events with `registerEvent`; use the element's own `doc`/`win` where it matters (popout windows); APIs newer than `minAppVersion` (1.13.0) are not allowed: `obsidianmd/no-unsupported-api` reports them.
 - **Resources**: everything created by a view (listeners, timers, animation frames) is released in `destroy()`/`onClose`; the ELK worker is terminated on unload.
 - **Performance**: no work proportional to the whole diagram on `pointermove` (see below).
 - Code, comments and commit messages in English; UI text only through `t()`.
@@ -262,10 +262,11 @@ To keep it that way:
 
 ## Releasing
 
-1. `npm version <patch|minor|major>`: updates `package.json`, `manifest.json` and `versions.json`, commits and tags (the tag is the bare version, e.g. `0.2.0`).
-2. `git push && git push --tags`.
-3. The *Release* workflow checks that the tag matches `manifest.json`, runs lint, tests and build, and creates a **draft** GitHub release with `main.js`, `manifest.json` and `styles.css`.
-4. Review the draft, add release notes, publish.
+1. Add a `## <version>` section to `CHANGELOG.md` (it becomes the release notes).
+2. `npm version <patch|minor|major>`: updates `package.json`, `manifest.json` and `versions.json`, commits and tags (the tag is the bare version, e.g. `0.3.0`, thanks to `.npmrc`).
+3. `git push && git push --tags`.
+4. The *Release* workflow checks that the tag matches `manifest.json`, runs lint, tests and build, attests the build provenance of the assets, and creates a **draft** GitHub release with `main.js`, `manifest.json`, `styles.css` and the CHANGELOG section as notes.
+5. Review the draft and publish it.
 
 `minAppVersion` changes only when a required API needs it; `versions.json` records the minimum Obsidian version of every release.
 
@@ -281,7 +282,10 @@ Checked before submitting to the community plugin directory:
 - [x] Events registered with `registerEvent`; listeners, timers, frames and the worker released on close/unload; leaves not detached in `onunload`.
 - [x] No `eval` / `new Function`.
 - [x] Styles in `styles.css` with a plugin prefix; inline styles only for dynamic CSS variables.
-- [x] Commands without default hotkeys, names without the plugin name; settings without a top-level heading, sections with `setHeading()` / `SettingGroup`; sentence case.
+- [x] Commands without default hotkeys, names without the plugin name; settings declared with `getSettingDefinitions()` (no deprecated `display()`); sentence case.
+- [x] `npm run lint` runs `eslint-plugin-obsidianmd` (the rules used by the directory review) with no errors or warnings; APIs within `minAppVersion` 1.13.0.
+- [x] Releases have notes (CHANGELOG) and artifact attestations.
+- [x] Vault enumeration: only `vault.getAllFolders()` in the folder picker of the settings, to choose a DB folder.
 - [x] Interface translated (13 languages, English default, follows Obsidian's language).
 - [x] `manifest.json` complete (`id` without "obsidian", description ending with a period), `versions.json`, `LICENSE` (MIT), `THIRD_PARTY_NOTICES.md` (elkjs, EPL-2.0) and licence notice in the `main.js` banner.
 - [x] `app.setting.open()` / `openTabById()` (internal API, no public alternative) is used only by *Open settings* and *Manage folders…*; if it is missing or fails, a notice tells the user how to open the settings.

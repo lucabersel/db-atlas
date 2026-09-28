@@ -30,7 +30,7 @@ DB Atlas turns a folder of notes into a database schema: **one note per table**,
 
 Download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/lucabersel/db-atlas/releases/latest) into `<vault>/.obsidian/plugins/db-atlas/`, then enable the plugin.
 
-DB Atlas works on desktop and mobile and requires Obsidian 1.5.7 or later.
+DB Atlas works on desktop and mobile and requires Obsidian 1.13.0 or later.
 
 ---
 
@@ -54,7 +54,7 @@ This example builds a tiny shop database with customers, orders and order lines.
 
 **1. Create the DB folder**
 
-Create a folder, e.g. `Shop`. Open *Settings → DB Atlas*, search for `Shop` in **DB folders** and click **Add**.
+Create a folder, e.g. `Shop`. Open *Settings → DB Atlas*, click **+** next to **DB folders** and choose `Shop`.
 
 **2. Create the tables**
 
@@ -276,15 +276,18 @@ No hotkeys are assigned by default; you can add your own in *Settings → Hotkey
 
 **DB folders**
 
-- Search a folder of the vault and click **Add**.
-- Drag the handle on the left of a folder to reorder the list: the diagram's folder menu uses the same order.
+- Click **+** (on mobile, the *Add* row below the list) and choose a folder of the vault.
+- Drag a folder by its handle to reorder the list: the diagram's folder menu uses the same order.
+- Remove a folder with its delete button: only the setting is removed, the notes are not touched.
 - Each folder shows how many tables it contains, or "not found" if it no longer exists.
+
+All DB Atlas settings can be found from Obsidian's settings search.
 
 **Other options**
 
 - **Language**: *Automatic* follows Obsidian's language; otherwise choose one of English, 中文, हिन्दी, Español, Français, العربية, বাংলা, Português, Русский, 日本語, Deutsch, Bahasa Indonesia, Italiano. The change is immediate; command names update after restarting Obsidian.
 - **Diagram location**: main tab, right sidebar or left sidebar.
-- **New table template**: the content of new table notes (`{{name}}` = table name). Until you edit it, the built-in template follows the language; the ↺ button restores it.
+- **New table template**: the content of new table notes (`{{name}}` = table name). Until you edit it, the built-in template follows the language; **Restore default** brings it back.
 
 ---
 

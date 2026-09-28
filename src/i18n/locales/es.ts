@@ -43,8 +43,6 @@ export const es: Locale = {
 	"settings.folders.search": "Buscar una carpeta de la bóveda…",
 	"settings.folders.add": "Añadir",
 	"settings.folders.empty": "No hay ninguna carpeta configurada.",
-	"settings.folders.drag": "Arrastra para reordenar",
-	"settings.folders.remove": "Quitar",
 	"settings.folders.tableCount": { one: "{count} tabla", other: "{count} tablas" },
 	"settings.folders.notFound": "no encontrada",
 	"settings.others.heading": "Otras opciones",

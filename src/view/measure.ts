@@ -15,13 +15,13 @@ export const FONT_ROLE_CLASS: Record<FontRole, string> = {
  * so theme fonts and sizes are respected. Results are cached until `reset()`.
  */
 export class TextMeasurer {
-	// Created from the SVG's own document/window so it also works in popout windows.
+	// Detached canvas: only used to measure; fonts come from the SVG's own window (popout-safe).
 	private readonly ctx: CanvasRenderingContext2D | null;
 	private fonts: Partial<Record<FontRole, string>> = {};
 	private cache = new Map<string, number>();
 
 	constructor(private readonly svg: SVGSVGElement) {
-		this.ctx = svg.doc.createElement("canvas").getContext("2d");
+		this.ctx = createEl("canvas").getContext("2d");
 	}
 
 	readonly measure: Measure = (text, role) => {

@@ -36,8 +36,6 @@ export const zh: Locale = {
 	"settings.folders.search": "搜索库中的文件夹…",
 	"settings.folders.add": "添加",
 	"settings.folders.empty": "尚未配置文件夹。",
-	"settings.folders.drag": "拖动以重新排序",
-	"settings.folders.remove": "移除",
 	"settings.folders.tableCount": { other: "{count} 个表" },
 	"settings.folders.notFound": "未找到",
 	"settings.others.heading": "其他选项",

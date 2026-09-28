@@ -23,7 +23,7 @@ Each table note keeps the column definitions in its properties and your notes ab
 
 **Manually**: download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/lucabersel/db-atlas/releases/latest) into `<vault>/.obsidian/plugins/db-atlas/` and enable the plugin.
 
-Requires Obsidian 1.5.7 or later.
+Requires Obsidian 1.13.0 or later.
 
 ## Quick start
 

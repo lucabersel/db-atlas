@@ -43,8 +43,6 @@ export const bn: Locale = {
 	"settings.folders.search": "ভল্টে একটি ফোল্ডার খুঁজুন…",
 	"settings.folders.add": "যোগ করুন",
 	"settings.folders.empty": "কোনো ফোল্ডার কনফিগার করা নেই।",
-	"settings.folders.drag": "ক্রম বদলাতে টেনে আনুন",
-	"settings.folders.remove": "সরান",
 	"settings.folders.tableCount": { one: "{count}টি টেবিল", other: "{count}টি টেবিল" },
 	"settings.folders.notFound": "পাওয়া যায়নি",
 	"settings.others.heading": "অন্যান্য বিকল্প",

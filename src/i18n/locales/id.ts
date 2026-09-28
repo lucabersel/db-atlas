@@ -37,8 +37,6 @@ export const id: Locale = {
 	"settings.folders.search": "Cari folder di vault…",
 	"settings.folders.add": "Tambah",
 	"settings.folders.empty": "Belum ada folder yang dikonfigurasi.",
-	"settings.folders.drag": "Seret untuk mengubah urutan",
-	"settings.folders.remove": "Hapus",
 	"settings.folders.tableCount": { other: "{count} tabel" },
 	"settings.folders.notFound": "tidak ditemukan",
 	"settings.others.heading": "Opsi lain",

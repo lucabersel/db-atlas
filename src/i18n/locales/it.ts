@@ -43,8 +43,6 @@ export const it: Locale = {
 	"settings.folders.search": "Cerca una cartella del vault…",
 	"settings.folders.add": "Aggiungi",
 	"settings.folders.empty": "Nessuna cartella configurata.",
-	"settings.folders.drag": "Trascina per riordinare",
-	"settings.folders.remove": "Rimuovi",
 	"settings.folders.tableCount": { one: "{count} tabella", other: "{count} tabelle" },
 	"settings.folders.notFound": "non trovata",
 	"settings.others.heading": "Altre opzioni",

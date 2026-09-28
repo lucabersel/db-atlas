@@ -203,7 +203,7 @@ export class Diagram {
 		this.destroyed = true;
 		this.generation++;
 		this.cancelDrag();
-		for (const frame of [this.syncFrame, this.dragFrame, this.refineFrame]) if (frame) cancelAnimationFrame(frame);
+		for (const frame of [this.syncFrame, this.dragFrame, this.refineFrame]) if (frame) window.cancelAnimationFrame(frame);
 		for (const off of this.cleanup) off();
 		this.viewport.destroy();
 		this.interactions.destroy();
@@ -272,7 +272,7 @@ export class Diagram {
 	/** Computes full routes a few milliseconds per frame (paused while dragging). */
 	private scheduleRefine(): void {
 		if (this.refineFrame || this.destroyed || this.routing.pending === 0) return;
-		this.refineFrame = requestAnimationFrame(() => {
+		this.refineFrame = window.requestAnimationFrame(() => {
 			this.refineFrame = 0;
 			if (this.drag?.moved) return; // resumed on drop
 			this.routing.refine(REFINE_BUDGET_MS);
@@ -285,7 +285,7 @@ export class Diagram {
 
 	private scheduleSync(): void {
 		if (this.syncFrame || this.destroyed) return;
-		this.syncFrame = requestAnimationFrame(() => {
+		this.syncFrame = window.requestAnimationFrame(() => {
 			this.syncFrame = 0;
 			this.syncVisible();
 		});
@@ -424,7 +424,7 @@ export class Diagram {
 		this.positions.set(table, pos);
 		this.tableEls.get(table)?.setAttribute("transform", `translate(${pos.x},${pos.y})`);
 		if (this.dragFrame) return;
-		this.dragFrame = requestAnimationFrame(() => {
+		this.dragFrame = window.requestAnimationFrame(() => {
 			this.dragFrame = 0;
 			this.pushPosition(table);
 			this.applyRouteChanges(this.routing.finalize());
@@ -440,7 +440,7 @@ export class Diagram {
 	/** End of a move: final position, full rerouting of affected lines. */
 	private finishMove(table: string, pos: TablePosition): void {
 		if (this.dragFrame) {
-			cancelAnimationFrame(this.dragFrame);
+			window.cancelAnimationFrame(this.dragFrame);
 			this.dragFrame = 0;
 		}
 		this.positions.set(table, pos);

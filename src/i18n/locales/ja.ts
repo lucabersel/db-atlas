@@ -37,8 +37,6 @@ export const ja: Locale = {
 	"settings.folders.search": "保管庫のフォルダを検索…",
 	"settings.folders.add": "追加",
 	"settings.folders.empty": "フォルダが設定されていません。",
-	"settings.folders.drag": "ドラッグして並べ替え",
-	"settings.folders.remove": "削除",
 	"settings.folders.tableCount": { other: "{count} 個のテーブル" },
 	"settings.folders.notFound": "見つかりません",
 	"settings.others.heading": "その他のオプション",

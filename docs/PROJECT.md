@@ -178,17 +178,19 @@ La vista si aggiorna automaticamente su creazione, modifica, eliminazione e rino
 
 ## 6. Impostazioni
 
-**Gestione cartelle**
-- Campo di ricerca con autocompletamento delle cartelle del vault e pulsante "Aggiungi" (controlla esistenza e duplicati).
-- Lista delle cartelle-DB: maniglia di trascinamento per riordinare (mouse e touch; l'ordine è quello del menu del diagramma), numero di tabelle, indicazione "non trovata" se la cartella non esiste, pulsante di rimozione.
+Pagina dichiarata con l'API `getSettingDefinitions()` di Obsidian 1.13: tutte le voci compaiono nella ricerca delle impostazioni di Obsidian.
 
-**Altre opzioni** (un unico gruppo con divisori su Obsidian ≥ 1.11)
+**Cartelle-DB** (lista nativa)
+- Pulsante "+" (su mobile riga "Aggiungi") che apre la scelta tra le cartelle del vault non ancora aggiunte.
+- Maniglia di trascinamento per riordinare (l'ordine è quello del menu del diagramma), pulsante di rimozione, numero di tabelle o indicazione "non trovata" se la cartella non esiste.
+
+**Altre opzioni** (un gruppo)
 
 | Impostazione | Tipo | Default |
 |---|---|---|
 | Lingua | `auto` \| codice lingua (vedi §6.1) | `auto` |
 | Posizione apertura vista | `tab` \| `right` \| `left` | `tab` |
-| Template nuova tabella | textarea, placeholder `{{name}}`, pulsante "Ripristina default" | template predefinito nella lingua corrente |
+| Template nuova tabella | textarea, placeholder `{{name}}`, voce "Ripristina default" | template predefinito nella lingua corrente |
 
 Template predefinito (in inglese; la riga sotto `## id` è tradotta nella lingua dell'interfaccia). Finché l'utente non lo modifica non viene salvato (`newTableTemplate: ""`), così segue la lingua scelta:
 
@@ -209,7 +211,7 @@ Prefisso `col_` **non configurabile**.
 ### 6.1 Lingue
 
 - Interfaccia tradotta in: inglese (riferimento), cinese semplificato, hindi, spagnolo, francese, arabo, bengalese, portoghese, russo, giapponese, tedesco, indonesiano, italiano.
-- `auto` segue la lingua di Obsidian (`getLanguage()` da 1.8.7, altrimenti `moment.locale()`); varianti regionali ricondotte alla lingua base (`pt-BR` → `pt`); lingua non supportata → inglese.
+- `auto` segue la lingua di Obsidian (`getLanguage()`); varianti regionali ricondotte alla lingua base (`pt-BR` → `pt`); lingua non supportata → inglese.
 - Il cambio si applica subito a impostazioni, vista e icona ribbon; i nomi dei comandi dopo il riavvio di Obsidian.
 - Traduzioni in `src/i18n/locales/`: segnaposto `{nome}`, plurali con le categorie di `Intl.PluralRules`. I messaggi di validazione sono codici (`issue.*`) tradotti al momento della visualizzazione. I test verificano che ogni lingua abbia tutte le chiavi e gli stessi segnaposto dell'inglese.
 - Il template predefinito salvato dalle versioni precedenti (italiano) viene riconosciuto e trattato come predefinito.
@@ -259,7 +261,7 @@ interface DbAtlasData {
 - **Desktop e mobile** (`isDesktopOnly: false`): vietate API Node/Electron (regola ESLint). Solo API Obsidian.
 - Lettura frontmatter via `metadataCache` (non parsing manuale del file); scritture solo con `vault.process` / `fileManager.processFrontMatter`.
 - Moduli di logica pura senza import da `obsidian` (regola ESLint), coperti da test **vitest**.
-- `minAppVersion` 1.5.7; funzioni più recenti (es. `SettingGroup`) usate solo se disponibili.
+- `minAppVersion` 1.13.0 (API dichiarativa delle impostazioni). Lint con le regole ufficiali di Obsidian (`eslint-plugin-obsidianmd`), le stesse della revisione della directory.
 
 ### 9.1 Prestazioni (requisito)
 
@@ -272,7 +274,7 @@ interface DbAtlasData {
 ```
 src/
   main.ts                 // Plugin: load/unload, comandi, ribbon, apertura vista, nuova tabella
-  settings.ts             // SettingTab (cartelle con riordino, altre opzioni)
+  settings.ts             // impostazioni dichiarative (getSettingDefinitions)
   data.ts                 // Default e normalizzazione di data.json            (puro)
   types.ts                // Modello dati (Table, Column, Relation, Issue, ...)
   elk-worker.d.ts         // Tipo del sorgente del worker ELK incorporato
@@ -328,7 +330,7 @@ styles.css
 | `npm run gen:perf -- <n>` | Genera `test-vault/Perf<n>` con `n` tabelle |
 
 - `test-vault/` è un vault locale per le prove, **non versionato**.
-- Rilascio: `npm version <patch|minor|major>` (aggiorna `manifest.json` e `versions.json`), poi push del commit e del tag. Il workflow GitHub verifica che il tag coincida con la versione, esegue lint, test e build e crea una release in bozza con `main.js`, `manifest.json`, `styles.css`.
+- Rilascio: sezione della versione in `CHANGELOG.md`, poi `npm version <patch|minor|major>` (aggiorna `manifest.json` e `versions.json`) e push del commit e del tag. Il workflow GitHub verifica che il tag coincida con la versione, esegue lint, test e build, genera le attestazioni di provenienza e crea una release in bozza con `main.js`, `manifest.json`, `styles.css` e le note dal changelog.
 - Checklist delle linee guida Obsidian e procedura di rilascio: [developer-guide.md](developer-guide.md).
 
 ---

@@ -1,7 +1,9 @@
 name: Release
 
-# Push a tag equal to the version in manifest.json (e.g. `0.1.0`, no "v" prefix) to create a
+# Push a tag equal to the version in manifest.json (e.g. `0.3.0`, no "v" prefix) to create a
 # draft GitHub release with the three files Obsidian installs: main.js, manifest.json, styles.css.
+# Release notes come from the matching section of CHANGELOG.md; the assets get build provenance
+# attestations.
 
 on:
   push:
@@ -10,6 +12,8 @@ on:
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 
 jobs:
   release:
@@ -42,6 +46,24 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            main.js
+            manifest.json
+            styles.css
+
+      - name: Release notes from CHANGELOG.md
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+          awk -v v="## $tag" '$0 == v { found = 1; next } /^## / && found { exit } found' CHANGELOG.md > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "CHANGELOG.md has no section for $tag" >&2
+            exit 1
+          fi
+          cat release-notes.md
+
       - name: Create draft release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -49,5 +71,6 @@ jobs:
           tag="${GITHUB_REF#refs/tags/}"
           gh release create "$tag" \
             --title="$tag" \
+            --notes-file=release-notes.md \
             --draft \
             main.js manifest.json styles.css

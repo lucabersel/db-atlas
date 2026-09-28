@@ -1,4 +1,4 @@
-import { debounce, getLanguage as getObsidianLanguage, moment, normalizePath, Notice, Plugin, TFile, WorkspaceLeaf } from "obsidian";
+import { debounce, getLanguage as getObsidianLanguage, normalizePath, Notice, Plugin, TFile, WorkspaceLeaf } from "obsidian";
 import { normalizeData, tableTemplate } from "./data";
 import { resolveLanguage, setLanguage, t } from "./i18n";
 import { setElkEngine } from "./layout/elkLayout";
@@ -59,14 +59,9 @@ export default class DbAtlasPlugin extends Plugin {
 		for (const view of this.getViews()) view.onSettingsChanged();
 	}
 
-	/** Obsidian's interface language (`getLanguage` exists since 1.8.7; moment follows the app language). */
-	private appLanguage(): string {
-		return typeof getObsidianLanguage === "function" ? getObsidianLanguage() : moment.locale();
-	}
-
 	/** Applies the language setting to the plugin interface (open views and the ribbon included). */
 	applyLanguage(): void {
-		setLanguage(resolveLanguage(this.data.settings.language, this.appLanguage()));
+		setLanguage(resolveLanguage(this.data.settings.language, getObsidianLanguage()));
 		this.ribbonEl?.setAttr("aria-label", t("ribbon.open"));
 		for (const view of this.getViews()) view.onLanguageChanged();
 	}

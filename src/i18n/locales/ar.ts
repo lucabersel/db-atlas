@@ -49,8 +49,6 @@ export const ar: Locale = {
 	"settings.folders.search": "ابحث عن مجلد في الخزنة…",
 	"settings.folders.add": "إضافة",
 	"settings.folders.empty": "لم يتم إعداد أي مجلد.",
-	"settings.folders.drag": "اسحب لإعادة الترتيب",
-	"settings.folders.remove": "إزالة",
 	"settings.folders.tableCount": {
 		zero: "لا جداول",
 		one: "جدول واحد",

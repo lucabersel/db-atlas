@@ -464,7 +464,7 @@ export class ChannelNudger {
 
 	private setOffset(s: Segment, offset: number): void {
 		let m = this.offsets.get(s.route);
-		if (!m) this.offsets.set(s.route, (m = new Map()));
+		if (!m) this.offsets.set(s.route, (m = new Map<number, number>()));
 		if (offset === 0) m.delete(s.index);
 		else m.set(s.index, offset);
 	}

@@ -47,8 +47,6 @@ export const ru: Locale = {
 	"settings.folders.search": "Найти папку в хранилище…",
 	"settings.folders.add": "Добавить",
 	"settings.folders.empty": "Папки не настроены.",
-	"settings.folders.drag": "Перетащите, чтобы изменить порядок",
-	"settings.folders.remove": "Удалить",
 	"settings.folders.tableCount": {
 		one: "{count} таблица",
 		few: "{count} таблицы",

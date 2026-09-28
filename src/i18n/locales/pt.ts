@@ -43,8 +43,6 @@ export const pt: Locale = {
 	"settings.folders.search": "Pesquisar uma pasta do cofre…",
 	"settings.folders.add": "Adicionar",
 	"settings.folders.empty": "Nenhuma pasta configurada.",
-	"settings.folders.drag": "Arraste para reordenar",
-	"settings.folders.remove": "Remover",
 	"settings.folders.tableCount": { one: "{count} tabela", other: "{count} tabelas" },
 	"settings.folders.notFound": "não encontrada",
 	"settings.others.heading": "Outras opções",

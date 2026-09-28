@@ -1,4 +1,4 @@
-import { App, Modal, Setting, TextComponent } from "obsidian";
+import { App, Modal, Setting } from "obsidian";
 import { t } from "../i18n";
 import { validateTableName } from "../model/tableName";
 
@@ -6,6 +6,7 @@ import { validateTableName } from "../model/tableName";
 export class NewTableModal extends Modal {
 	private name = "";
 	private errorEl!: HTMLElement;
+	private inputEl: HTMLInputElement | null = null;
 
 	constructor(
 		app: App,
@@ -21,9 +22,8 @@ export class NewTableModal extends Modal {
 		const { contentEl } = this;
 		contentEl.createEl("p", { cls: "dba-modal-hint", text: t("newTable.folder", { folder: this.folder }) });
 
-		let input: TextComponent | null = null;
 		new Setting(contentEl).setName(t("newTable.name")).addText((text) => {
-			input = text;
+			this.inputEl = text.inputEl;
 			text.setPlaceholder(t("newTable.placeholder")).onChange((v) => {
 				this.name = v;
 				this.showError(v.trim() === "" ? null : this.errorText(v));
@@ -41,7 +41,7 @@ export class NewTableModal extends Modal {
 			.addButton((b) => b.setButtonText(t("newTable.cancel")).onClick(() => this.close()))
 			.addButton((b) => b.setButtonText(t("newTable.create")).setCta().onClick(() => this.submit()));
 
-		window.setTimeout(() => (input as TextComponent | null)?.inputEl.focus(), 0);
+		window.setTimeout(() => this.inputEl?.focus(), 0);
 	}
 
 	onClose(): void {

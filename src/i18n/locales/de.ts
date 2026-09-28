@@ -43,8 +43,6 @@ export const de: Locale = {
 	"settings.folders.search": "Ordner im Vault suchen…",
 	"settings.folders.add": "Hinzufügen",
 	"settings.folders.empty": "Kein Ordner konfiguriert.",
-	"settings.folders.drag": "Zum Sortieren ziehen",
-	"settings.folders.remove": "Entfernen",
 	"settings.folders.tableCount": { one: "{count} Tabelle", other: "{count} Tabellen" },
 	"settings.folders.notFound": "nicht gefunden",
 	"settings.others.heading": "Weitere Optionen",

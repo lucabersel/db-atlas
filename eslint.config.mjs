@@ -1,26 +1,33 @@
-import js from "@eslint/js";
-import tseslint from "typescript-eslint";
+import { defineConfig } from "eslint/config";
+import obsidianmd from "eslint-plugin-obsidianmd";
 
 const nodeModules = ["fs", "path", "os", "child_process", "electron"].map((name) => ({
 	name,
 	message: "Node/Electron APIs are not available on mobile.",
 }));
 
-export default tseslint.config(
+export default defineConfig([
 	{
-		ignores: ["main.js", "node_modules/", "test-vault/", "*.mjs"],
+		// Dev tooling (Node scripts, build and test configs) is not part of the plugin.
+		ignores: ["main.js", "node_modules/", "test-vault/", "scripts/", "esbuild.config.mjs", "version-bump.mjs", "vitest*.config.ts"],
 	},
-	js.configs.recommended,
-	...tseslint.configs.recommended,
+
+	// Official Obsidian rules (the same checks as the community directory review), type-checked.
+	...obsidianmd.configs.recommended,
 	{
-		// Dev scripts run in Node.
-		files: ["scripts/**/*.mjs"],
-		languageOptions: { globals: { process: "readonly", console: "readonly" } },
+		languageOptions: {
+			parserOptions: {
+				projectService: { allowDefaultProject: ["eslint.config.mjs"] },
+				tsconfigRootDir: import.meta.dirname,
+			},
+		},
 	},
+
 	{
 		files: ["src/**/*.ts", "tests/**/*.ts"],
 		rules: {
 			"@typescript-eslint/no-unused-vars": ["error", { args: "none" }],
+			"obsidianmd/ui/sentence-case": ["warn", { brands: ["DB Atlas"] }],
 			"no-restricted-imports": ["error", { paths: nodeModules }],
 			"no-restricted-syntax": [
 				"error",
@@ -47,7 +54,7 @@ export default tseslint.config(
 			"src/view/viewport.ts",
 			"src/view/color.ts",
 		],
-		ignores: ["src/model/schemaLoader.ts"],
+		ignores: ["src/model/schemaLoader.ts", "src/layout/elkWorker.ts"],
 		rules: {
 			"no-restricted-imports": [
 				"error",
@@ -55,4 +62,4 @@ export default tseslint.config(
 			],
 		},
 	},
-);
+]);

@@ -8,38 +8,36 @@ import workerSource from "elk-worker-source";
 
 export function createWorkerElk(): ElkInstance {
 	const url = URL.createObjectURL(new Blob([workerSource], { type: "text/javascript" }));
-	let failure: unknown = null;
-	const failed = new Set<(err: unknown) => void>();
+	let failure: Error | null = null;
+	const pending = new Set<(err: Error) => void>();
 
 	const elk = new ELK({
 		workerUrl: url,
 		workerFactory: (workerUrl) => {
 			const worker = new Worker(workerUrl as string);
 			worker.addEventListener("error", (e) => {
-				failure = e.message || "ELK worker error";
-				for (const reject of failed) reject(failure);
-				failed.clear();
+				failure = new Error(e.message || "ELK worker error");
+				for (const reject of pending) reject(failure);
+				pending.clear();
 			});
 			return worker;
 		},
 	});
 
-	return {
-		layout: (graph, args) => {
-			if (failure !== null) return Promise.reject(failure);
-			return new Promise((resolve, reject) => {
-				failed.add(reject);
-				elk.layout(graph, args).then(
-					(result) => {
-						failed.delete(reject);
-						resolve(result);
-					},
-					(err) => {
-						failed.delete(reject);
-						reject(err);
-					},
-				);
+	const engine: ElkInstance = {
+		layout: async (graph, args) => {
+			if (failure) throw failure;
+			// Rejected by the worker's "error" event too: a crashed worker never answers.
+			let onCrash: ((err: Error) => void) | null = null;
+			const crashed = new Promise<never>((_, reject) => {
+				onCrash = reject;
+				pending.add(reject);
 			});
+			try {
+				return await Promise.race([elk.layout(graph, args), crashed]);
+			} finally {
+				if (onCrash) pending.delete(onCrash);
+			}
 		},
 		knownLayoutAlgorithms: () => elk.knownLayoutAlgorithms(),
 		knownLayoutOptions: () => elk.knownLayoutOptions(),
@@ -48,5 +46,6 @@ export function createWorkerElk(): ElkInstance {
 			elk.terminateWorker();
 			URL.revokeObjectURL(url);
 		},
-	} as ElkInstance;
+	};
+	return engine;
 }

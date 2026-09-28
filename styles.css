@@ -2,156 +2,8 @@
 
 /* ---------- Settings ---------- */
 
-/* Description right under the "Gestione cartelle" heading, aligned with its text. */
-.dba-settings-folders .setting-item-heading,
-.setting-item-heading.dba-settings-folders {
-	margin-bottom: 0;
-	padding-bottom: var(--size-2-1);
-}
-
-.dba-settings-intro {
-	margin: 0 0 var(--size-4-3);
-	padding-inline: var(--size-4-4);
-}
-
-.dba-folder-list {
-	margin: var(--size-4-1) 0 var(--size-4-12);
-	border: var(--border-width) solid var(--background-modifier-border);
-	border-radius: var(--radius-m);
-	background-color: var(--background-primary-alt);
-	overflow: hidden;
-}
-
-.dba-folder-list-empty {
-	padding: var(--size-4-3) var(--size-4-4);
-	color: var(--text-faint);
-	font-size: var(--font-ui-small);
-	text-align: center;
-}
-
-.dba-folder-item {
-	display: flex;
-	align-items: center;
-	gap: var(--size-4-3);
-	min-height: 40px;
-	padding: var(--size-2-2) var(--size-4-2) var(--size-2-2) var(--size-4-3);
-}
-
-.dba-folder-item + .dba-folder-item {
-	border-top: var(--border-width) solid var(--background-modifier-border);
-}
-
-.dba-folder-item:hover {
-	background-color: var(--background-modifier-hover);
-}
-
-.dba-folder-icon {
-	display: flex;
-	color: var(--text-muted);
-	--icon-size: var(--icon-s);
-}
-
-.dba-folder-path {
-	flex: 1;
-	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	font-size: var(--font-ui-small);
-	color: var(--text-normal);
-}
-
-.dba-folder-meta {
-	flex-shrink: 0;
-	padding: 0 var(--size-4-2);
-	border-radius: var(--radius-s);
-	background-color: var(--background-modifier-border);
-	color: var(--text-muted);
-	font-size: var(--font-ui-smaller);
-	line-height: 1.6;
-}
-
-.dba-folder-item.is-missing .dba-folder-icon,
-.dba-folder-item.is-missing .dba-folder-meta {
-	color: var(--text-warning);
-}
-
-.dba-folder-item.is-missing .dba-folder-path {
-	color: var(--text-muted);
-	text-decoration: line-through;
-}
-
-.dba-folder-item .clickable-icon {
-	color: var(--text-faint);
-}
-
-.dba-folder-item .clickable-icon:hover {
-	color: var(--text-normal);
-}
-
-.dba-folder-item .clickable-icon.dba-folder-remove:hover {
-	color: var(--text-error);
-}
-
-.dba-folder-item {
-	position: relative;
-	transform: translateY(var(--dba-shift, 0));
-	transition: transform 150ms ease;
-}
-
-.dba-folder-item.is-dragging {
-	z-index: 1;
-	transform: translateY(var(--dba-drag-y, 0));
-	transition: none;
-	background-color: var(--background-primary);
-	box-shadow: var(--shadow-s);
-}
-
-.dba-folder-handle {
-	display: flex;
-	margin-left: calc(-1 * var(--size-4-1));
-	color: var(--text-faint);
-	cursor: grab;
-	touch-action: none;
-	--icon-size: var(--icon-s);
-}
-
-.dba-folder-handle:hover {
-	color: var(--text-muted);
-}
-
-.dba-folder-item.is-dragging .dba-folder-handle {
-	cursor: grabbing;
-}
-
-.dba-folder-add {
-	border-top: none;
-	padding-bottom: var(--size-4-2);
-}
-
-.dba-folder-add .setting-item-info {
-	display: none;
-}
-
-.dba-folder-add .setting-item-control {
-	justify-content: flex-start;
-}
-
-.dba-folder-add .search-input-container {
-	flex: 1;
-}
-
-.dba-folder-add .search-input-container input {
+.dba-settings-others textarea {
 	width: 100%;
-}
-
-.dba-setting-template .setting-item-info {
-	display: none;
-}
-
-.dba-setting-template .setting-item-control textarea {
-	width: 100%;
-	min-height: 12em;
 	font-family: var(--font-monospace);
 	font-size: var(--font-ui-small);
 }
@@ -256,8 +108,10 @@
 	color: var(--text-faint);
 }
 
-.dba-hidden {
-	display: none !important;
+/* Beats the display of .dba-svg, .dba-empty, .dba-busy, .dba-tooltip, .dba-modal-error (higher specificity). */
+.dba-view .dba-hidden,
+.modal .dba-hidden {
+	display: none;
 }
 
 /* ---------- Diagram ---------- */
@@ -442,19 +296,6 @@
 }
 
 .is-mobile .dba-toolbar-button {
-	min-width: 44px;
-	min-height: 44px;
-	justify-content: center;
-}
-
-.is-mobile .dba-folder-handle {
-	min-width: 32px;
-	min-height: 44px;
-	align-items: center;
-	justify-content: center;
-}
-
-.is-mobile .dba-folder-item .clickable-icon {
 	min-width: 44px;
 	min-height: 44px;
 	justify-content: center;
