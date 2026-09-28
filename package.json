@@ -1,6 +1,6 @@
 {
   "name": "db-atlas",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Document database schemas with one note per table and view them as an interactive ER diagram.",
   "main": "main.js",
   "type": "module",
