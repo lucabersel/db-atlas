@@ -2,153 +2,54 @@
 
 Document database schemas in Obsidian with **one note per table**, and explore them as an **interactive ER diagram**.
 
-Each table note keeps the column definitions in its properties and free-form notes about each column in its body. The diagram view reads every note of a "DB folder", draws tables and relations, and opens the note (or the paragraph about a column) with a click.
+Each table note keeps the column definitions in its properties and your notes about each column in its body. The diagram view reads a folder of table notes, draws tables and relations, and opens the right note — or the paragraph about a column — with a click.
 
 ![DB Atlas diagram](docs/screenshot.png)
 
-> Available in English, 中文, हिन्दी, Español, Français, العربية, বাংলা, Português, Русский, 日本語, Deutsch, Bahasa Indonesia and Italiano (follows Obsidian's language by default).
-
 ## Features
 
-- One note per table; columns defined as properties, notes about each column as `## column` headings.
-- Interactive diagram: pan, zoom, fit, drag tables (positions are saved), orthogonal relation lines with crow's foot cardinality.
-- Click a table header to open its note, click a column to jump to its `## column` heading (created if missing).
-- Live updates while you edit the notes; renaming a table updates every reference to it.
-- Clear feedback on mistakes: invalid columns in red, broken references marked with ⚠️, explanations in tooltips.
-- Built for large schemas: 1000+ tables stay smooth (only visible items are drawn, detail follows the zoom level, layout runs in a background worker).
+- **One note per table**: columns as `col_*` properties, notes about each column under `## column` headings.
+- **Interactive diagram**: pan, zoom, fit; drag tables (positions are saved); orthogonal relation lines with crow's foot cardinality; tooltips with column details.
+- **From the diagram to your notes**: click a table to open its note, click a column to jump to its heading (created if missing).
+- **Always in sync**: live updates while you edit; renaming a table updates every reference to it.
+- **Clear feedback**: invalid columns in red, broken references marked with ⚠️, reasons in the tooltips — one broken note never breaks the others.
+- **Built for large schemas**: smooth with 1000+ tables.
+- **13 languages**: English, 中文, हिन्दी, Español, Français, العربية, বাংলা, Português, Русский, 日本語, Deutsch, Bahasa Indonesia, Italiano (follows Obsidian's language by default).
 - Desktop and mobile.
 
 ## Installation
 
-### With BRAT (beta)
+**With BRAT**: install [BRAT](https://github.com/TfTHacker/obsidian42-brat), choose **Add beta plugin**, enter `https://github.com/lucabersel/db-atlas`, then enable **DB Atlas** in *Settings → Community plugins*.
 
-1. Install the [BRAT](https://github.com/TfTHacker/obsidian42-brat) community plugin.
-2. In BRAT, choose **Add beta plugin** and enter `https://github.com/lucabersel/db-atlas`.
-3. Enable **DB Atlas** in *Settings → Community plugins*.
+**Manually**: download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/lucabersel/db-atlas/releases/latest) into `<vault>/.obsidian/plugins/db-atlas/` and enable the plugin.
 
-### Manually
+Requires Obsidian 1.5.7 or later.
 
-Download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/lucabersel/db-atlas/releases/latest) into `<vault>/.obsidian/plugins/db-atlas/`, then enable the plugin.
+## Quick start
 
-## Getting started
+1. Create a folder (e.g. `Shop`) and add it in *Settings → DB Atlas → DB folders*.
+2. Run **DB Atlas: New table**, or create notes in the folder: each note is a table named after the file.
+3. Define the columns as properties — a JSON object in single quotes:
 
-1. Create a folder for your database, e.g. `Sales`.
-2. In *Settings → DB Atlas*, add it to the DB folders.
-3. Run **DB Atlas: New table** and give it a name, or create notes in the folder yourself.
+   ```yaml
+   ---
+   table_description: Customer orders
+   col_id: '{"type":"int","pk":true,"increment":true}'
+   col_customer_id: '{"type":"int","notNull":true,"ref":"customers.id"}'
+   col_status: '{"type":"varchar(20)","notNull":true,"default":"pending"}'
+   ---
+
+   ## status
+   pending → paid → shipped → delivered, or cancelled.
+   ```
+
 4. Open the diagram with the ribbon icon or **DB Atlas: Open diagram**.
 
-Every Markdown note directly inside a DB folder is a table (subfolders are ignored). **The table name is the file name.**
+## Documentation
 
-## Table note format
-
-```yaml
----
-table_color: "#2E7D32"
-table_description: Customers
-col_id: '{"type":"int","pk":true,"increment":true}'
-col_company_name: '{"type":"varchar(120)","notNull":true}'
-col_agent_id: '{"type":"int","ref":"agents.id","rel":">"}'
-tags: [db]
----
-
-General notes about the table...
-
-## agent_id
-Set only for customers managed by the sales network.
-```
-
-- `table_color` (optional): header colour, any CSS colour.
-- `table_description` (optional): shown under the table name.
-- Every property starting with `col_` is a column; the column name is the key without the prefix. Columns are shown in property order.
-- Other properties (like `tags`) are ignored by the plugin.
-
-The value of a `col_` property is a **JSON string wrapped in single quotes** (without the quotes YAML would read it as an object, which Obsidian's properties panel does not handle well; it still works, with a warning).
-
-### Column keys
-
-| Key | Type | Required | Default | Meaning |
-|---|---|---|---|---|
-| `type` | string | yes | — | SQL type, free text (`int`, `varchar(20)`, …) |
-| `pk` | boolean | no | `false` | Primary key (several `pk` columns = composite key) |
-| `notNull` | boolean | no | `false` | NOT NULL |
-| `unique` | boolean | no | `false` | UNIQUE |
-| `increment` | boolean | no | `false` | Auto increment |
-| `default` | string, number, boolean | no | — | Default value |
-| `ref` | `"table.column"` | no | — | Foreign key to a table **in the same DB folder** |
-| `rel` | `">"`, `"<"`, `"-"`, `"<>"` | no | `">"` when `ref` is set | Cardinality, read from the FK side |
-
-Unknown keys are ignored. Table and column names are case-sensitive.
-
-### Relations and cardinality
-
-| `rel` | FK side | Referenced side |
-|---|---|---|
-| `>` | many | one |
-| `<` | one | many |
-| `-` | one | one |
-| `<>` | many | many |
-
-On the referenced side, "one" is drawn as a bar when the FK column is `notNull`, as a circle (zero or one) otherwise. Self-references are drawn as a loop.
-
-### What is reported
-
-| Case | Shown as |
-|---|---|
-| Invalid JSON or missing `type` | Column in red, rest of the table drawn normally |
-| `ref` to a missing table/column, to another DB folder, or malformed | ⚠️ on the column, no line |
-| Invalid `rel` | `>` is used, ⚠️ on the column |
-| Note without `col_` properties | Empty table with ⚠️ |
-| File name containing `.` | Table with ⚠️, cannot be referenced |
-
-Hover a column (long-press on mobile) to see its details and the reason of any warning. A mistake in one note never prevents the others from being drawn.
-
-## Diagram
-
-| Desktop | Mobile | Effect |
-|---|---|---|
-| Hover a column | Long-press a column | Tooltip: `int · PK · NOT NULL · UNIQUE · AI · default: x · → agents.id` |
-| Click the header | Tap the header | Open the table note |
-| Click a column | Tap a column | Open the note at `## column` (appended at the end if missing) |
-| Drag the header | Drag the header | Move the table (saved) |
-| Drag the background | Drag with one finger | Pan |
-| Wheel / pinch | Pinch | Zoom |
-
-Ctrl/Cmd-click opens the note in a new tab. The toolbar has the DB folder menu, zoom in/out and fit. Tables without a saved position are placed automatically; new tables are placed next to the existing ones without moving them.
-
-## Commands
-
-| Command | Action |
-|---|---|
-| Open diagram | Open the diagram in the default location |
-| Open diagram in a new tab / in the right sidebar / in the left sidebar | Open the diagram in a specific location |
-| New table | Create a table note from the template in the current DB folder (the one shown in the diagram, or chosen from a list) |
-
-## Settings
-
-- **DB folders**: the folders that represent a database. Drag to reorder: the order is used by the folder menu of the diagram.
-- **Language**: automatic (Obsidian's language) or one of the available languages. Command names change after restarting Obsidian.
-- **Diagram location**: main tab, right sidebar or left sidebar.
-- **New table template**: content of new table notes; `{{name}}` is replaced by the table name. Until you edit it, the built-in template follows the language.
-
-Settings and table positions are stored in the plugin's `data.json`. Renaming a table note updates the references to it in the other notes of the folder (and its saved position); renaming or moving a DB folder updates the settings. Renaming a column is not propagated.
-
-## Development
-
-```bash
-npm install
-npm run dev        # build in watch mode, copies the plugin into test-vault/
-npm run build      # type-check + production build
-npm test           # unit tests (vitest)
-npm run lint
-npm run bench      # layout/routing timings on generated schemas (100 to 2000 tables)
-npm run gen:perf -- 1000   # generate test-vault/Perf1000 with 1000 tables
-```
-
-`test-vault/` is a local, git-ignored vault: open it in Obsidian and enable the plugin to try your changes (`npm run dev` keeps its copy of the plugin up to date).
-
-The full specification of the plugin's behaviour and source layout is in [PROJECT.md](PROJECT.md) (Italian).
-
-Releasing: update the version with `npm version <patch|minor|major>` (updates `manifest.json` and `versions.json`), push the commit and the tag; the GitHub workflow builds and creates a draft release with `main.js`, `manifest.json` and `styles.css`.
+- **[User guide](docs/user-guide.md)**: writing table notes, column keys, relations and cardinality, errors, using the diagram, commands, settings, FAQ.
+- **[Developer guide](docs/developer-guide.md)**: architecture, modules, algorithms, coding conventions, tests and benchmarks, translations, releasing.
+- [PROJECT.md](docs/PROJECT.md): full functional specification (Italian).
 
 ## License
 

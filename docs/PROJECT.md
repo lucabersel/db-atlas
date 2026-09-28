@@ -4,7 +4,7 @@ Plugin Obsidian (`id: db-atlas`) per documentare schemi di database con **una no
 
 Ogni tabella ha una nota con la definizione dei campi (nelle properties) e appunti liberi sull'uso di ciascun campo (nel corpo). La vista diagramma legge tutte le note di una cartella-DB, disegna tabelle e relazioni, e permette di aprire la nota (o il paragrafo del campo) con un click.
 
-Questo documento descrive il comportamento e la struttura del plugin (versione 0.1.x) ed è il riferimento per ogni modifica. La guida per gli utenti è il [README](README.md).
+Questo documento descrive il comportamento e la struttura del plugin ed è il riferimento per ogni modifica. Guide in inglese: [utente](user-guide.md) e [sviluppatore](developer-guide.md).
 
 ---
 
@@ -329,7 +329,7 @@ styles.css
 
 - `test-vault/` è un vault locale per le prove, **non versionato**.
 - Rilascio: `npm version <patch|minor|major>` (aggiorna `manifest.json` e `versions.json`), poi push del commit e del tag. Il workflow GitHub verifica che il tag coincida con la versione, esegue lint, test e build e crea una release in bozza con `main.js`, `manifest.json`, `styles.css`.
-- Controlli per la pubblicazione: `docs/release-checklist.md`.
+- Checklist delle linee guida Obsidian e procedura di rilascio: [developer-guide.md](developer-guide.md).
 
 ---
 
