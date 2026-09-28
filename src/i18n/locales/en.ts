@@ -17,6 +17,7 @@ export const en = {
 	"notice.folderAlreadyAdded": 'DB Atlas: "{folder}" is already in the list.',
 	"notice.createFailed": 'DB Atlas: could not create table "{name}".',
 	"notice.noteMissing": 'DB Atlas: note "{path}" not found.',
+	"notice.openSettingsManually": "DB Atlas: open Settings and choose DB Atlas.",
 	"notice.refsUpdated": {
 		one: 'DB Atlas: references to "{table}" updated in {count} note.',
 		other: 'DB Atlas: references to "{table}" updated in {count} notes.',

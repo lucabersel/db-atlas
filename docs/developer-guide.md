@@ -283,5 +283,5 @@ Checked before submitting to the community plugin directory:
 - [x] Commands without default hotkeys, names without the plugin name; settings without a top-level heading, sections with `setHeading()` / `SettingGroup`; sentence case.
 - [x] Interface translated (13 languages, English default, follows Obsidian's language).
 - [x] `manifest.json` complete (`id` without "obsidian", description ending with a period), `versions.json`, `LICENSE` (MIT), `THIRD_PARTY_NOTICES.md` (elkjs, EPL-2.0) and licence notice in the `main.js` banner.
-- [ ] `app.setting.open()` / `openTabById()` (private API) is used by *Open settings* and *Manage folders…*; it is guarded, but reviewers may ask to remove it.
-- [ ] Translations other than English and Italian would benefit from a review by native speakers.
+- [x] `app.setting.open()` / `openTabById()` (internal API, no public alternative) is used only by *Open settings* and *Manage folders…*; if it is missing or fails, a notice tells the user how to open the settings.
+- [x] Translations other than English and Italian welcome review by native speakers through pull requests.

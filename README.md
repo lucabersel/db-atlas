@@ -51,6 +51,10 @@ Requires Obsidian 1.5.7 or later.
 - **[Developer guide](docs/developer-guide.md)**: architecture, modules, algorithms, coding conventions, tests and benchmarks, translations, releasing.
 - [PROJECT.md](docs/PROJECT.md): full functional specification (Italian).
 
+## Contributing
+
+Issues and pull requests are welcome — especially improvements to the translations or new languages (see [Translations](docs/developer-guide.md#translations) in the developer guide; `npm test` checks that every language is complete).
+
 ## License
 
 MIT, see [LICENSE](LICENSE). The bundled `main.js` includes [elkjs](https://github.com/kieler/elkjs) (EPL-2.0), see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

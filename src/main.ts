@@ -71,11 +71,19 @@ export default class DbAtlasPlugin extends Plugin {
 		for (const view of this.getViews()) view.onLanguageChanged();
 	}
 
+	/**
+	 * Opens the plugin's settings tab. There is no public API for this: `app.setting` is internal,
+	 * so if it is missing or changes, the user is told how to get there instead.
+	 */
 	openSettings(): void {
 		const setting = (this.app as unknown as AppWithSettings).setting;
-		if (!setting) return;
-		setting.open();
-		setting.openTabById(this.manifest.id);
+		try {
+			if (typeof setting?.open !== "function" || typeof setting.openTabById !== "function") throw new Error("app.setting unavailable");
+			setting.open();
+			setting.openTabById(this.manifest.id);
+		} catch {
+			new Notice(t("notice.openSettingsManually"));
+		}
 	}
 
 	getViews(): DbAtlasView[] {

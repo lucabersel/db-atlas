@@ -14,6 +14,7 @@ export const es: Locale = {
 	"notice.folderAlreadyAdded": 'DB Atlas: "{folder}" ya está en la lista.',
 	"notice.createFailed": 'DB Atlas: no se pudo crear la tabla "{name}".',
 	"notice.noteMissing": 'DB Atlas: no se encontró la nota "{path}".',
+	"notice.openSettingsManually": "DB Atlas: abre Ajustes y elige DB Atlas.",
 	"notice.refsUpdated": {
 		one: 'DB Atlas: referencias a "{table}" actualizadas en {count} nota.',
 		other: 'DB Atlas: referencias a "{table}" actualizadas en {count} notas.',

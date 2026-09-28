@@ -14,6 +14,7 @@ export const ar: Locale = {
 	"notice.folderAlreadyAdded": "DB Atlas: «{folder}» موجود في القائمة بالفعل.",
 	"notice.createFailed": "DB Atlas: تعذّر إنشاء الجدول «{name}».",
 	"notice.noteMissing": "DB Atlas: لم يتم العثور على الملاحظة «{path}».",
+	"notice.openSettingsManually": "DB Atlas: افتح الإعدادات واختر DB Atlas.",
 	"notice.refsUpdated": {
 		zero: "DB Atlas: لم يتم تحديث أي مراجع إلى «{table}».",
 		one: "DB Atlas: تم تحديث المراجع إلى «{table}» في ملاحظة واحدة.",

@@ -14,6 +14,7 @@ export const ru: Locale = {
 	"notice.folderAlreadyAdded": "DB Atlas: «{folder}» уже есть в списке.",
 	"notice.createFailed": "DB Atlas: не удалось создать таблицу «{name}».",
 	"notice.noteMissing": "DB Atlas: заметка «{path}» не найдена.",
+	"notice.openSettingsManually": "DB Atlas: откройте «Настройки» и выберите DB Atlas.",
 	"notice.refsUpdated": {
 		one: "DB Atlas: ссылки на «{table}» обновлены в {count} заметке.",
 		few: "DB Atlas: ссылки на «{table}» обновлены в {count} заметках.",

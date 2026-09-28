@@ -14,6 +14,7 @@ export const hi: Locale = {
 	"notice.folderAlreadyAdded": 'DB Atlas: "{folder}" पहले से सूची में है।',
 	"notice.createFailed": 'DB Atlas: तालिका "{name}" नहीं बनाई जा सकी।',
 	"notice.noteMissing": 'DB Atlas: नोट "{path}" नहीं मिला।',
+	"notice.openSettingsManually": "DB Atlas: सेटिंग्स खोलें और DB Atlas चुनें।",
 	"notice.refsUpdated": {
 		one: 'DB Atlas: "{table}" के संदर्भ {count} नोट में अपडेट किए गए।',
 		other: 'DB Atlas: "{table}" के संदर्भ {count} नोट्स में अपडेट किए गए।',

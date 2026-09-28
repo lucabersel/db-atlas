@@ -14,6 +14,7 @@ export const zh: Locale = {
 	"notice.folderAlreadyAdded": "DB Atlas：“{folder}”已在列表中。",
 	"notice.createFailed": "DB Atlas：无法创建表“{name}”。",
 	"notice.noteMissing": "DB Atlas：未找到笔记“{path}”。",
+	"notice.openSettingsManually": "DB Atlas：请打开“设置”并选择 DB Atlas。",
 	"notice.refsUpdated": { other: "DB Atlas：已在 {count} 篇笔记中更新对“{table}”的引用。" },
 	"notice.refsFailed": { other: "DB Atlas：无法更新 {count} 篇笔记中的引用（请查看控制台）。" },
 

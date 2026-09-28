@@ -14,6 +14,7 @@ export const ja: Locale = {
 	"notice.folderAlreadyAdded": "DB Atlas: 「{folder}」はすでにリストにあります。",
 	"notice.createFailed": "DB Atlas: テーブル「{name}」を作成できませんでした。",
 	"notice.noteMissing": "DB Atlas: ノート「{path}」が見つかりません。",
+	"notice.openSettingsManually": "DB Atlas: 設定を開き、DB Atlas を選択してください。",
 	"notice.refsUpdated": { other: "DB Atlas: {count} 件のノートで「{table}」への参照を更新しました。" },
 	"notice.refsFailed": { other: "DB Atlas: {count} 件のノートの参照を更新できませんでした（コンソールを確認してください）。" },
 

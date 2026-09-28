@@ -14,6 +14,7 @@ export const id: Locale = {
 	"notice.folderAlreadyAdded": 'DB Atlas: "{folder}" sudah ada di daftar.',
 	"notice.createFailed": 'DB Atlas: tabel "{name}" tidak dapat dibuat.',
 	"notice.noteMissing": 'DB Atlas: catatan "{path}" tidak ditemukan.',
+	"notice.openSettingsManually": "DB Atlas: buka Pengaturan lalu pilih DB Atlas.",
 	"notice.refsUpdated": { other: 'DB Atlas: referensi ke "{table}" diperbarui di {count} catatan.' },
 	"notice.refsFailed": { other: "DB Atlas: referensi di {count} catatan tidak dapat diperbarui (lihat konsol)." },
 
