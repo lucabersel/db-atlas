@@ -1,4 +1,4 @@
-import { debounce, getLanguage as getObsidianLanguage, moment, Notice, Plugin, TFile, WorkspaceLeaf } from "obsidian";
+import { debounce, getLanguage as getObsidianLanguage, moment, normalizePath, Notice, Plugin, TFile, WorkspaceLeaf } from "obsidian";
 import { normalizeData, tableTemplate } from "./data";
 import { resolveLanguage, setLanguage, t } from "./i18n";
 import { setElkEngine } from "./layout/elkLayout";
@@ -150,7 +150,7 @@ export default class DbAtlasPlugin extends Plugin {
 
 	private async createTable(folder: string, name: string): Promise<void> {
 		try {
-			const file = await this.app.vault.create(tableNotePath(folder, name), fillTemplate(tableTemplate(this.data.settings), name));
+			const file = await this.app.vault.create(normalizePath(tableNotePath(folder, name)), fillTemplate(tableTemplate(this.data.settings), name));
 			await openFile(this.app, file, this.getViews()[0]?.leaf);
 		} catch (err) {
 			console.error("[db-atlas] could not create table note", err);

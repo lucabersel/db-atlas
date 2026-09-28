@@ -3,6 +3,7 @@ import {
 	App,
 	ButtonComponent,
 	ExtraButtonComponent,
+	normalizePath,
 	Notice,
 	PluginSettingTab,
 	Setting,
@@ -183,7 +184,7 @@ export class DbAtlasSettingTab extends PluginSettingTab {
 		let addButton: ButtonComponent | null = null;
 		const add = async () => {
 			if (pending.trim() === "") return;
-			const path = normalizeFolderPath(pending);
+			const path = normalizeFolderPath(normalizePath(pending));
 			if (this.app.vault.getFolderByPath(path) === null) {
 				new Notice(t("notice.folderMissing", { folder: path }));
 				return;

@@ -276,7 +276,8 @@ Checked before submitting to the community plugin directory:
 - [x] No `innerHTML` / `outerHTML` / `insertAdjacentHTML` with user data.
 - [x] No Node/Electron APIs; `main.js` only requires `obsidian`; `isDesktopOnly: false`.
 - [x] No `console.log`; only `console.error` for real failures.
-- [x] No global `app`; files changed with `vault.process` / `processFrontMatter`.
+- [x] No global `app`; files changed with `vault.process` / `processFrontMatter`; user-entered paths go through `normalizePath()`.
+- [x] No lookbehind in regular expressions (unsupported on older iOS).
 - [x] Events registered with `registerEvent`; listeners, timers, frames and the worker released on close/unload; leaves not detached in `onunload`.
 - [x] No `eval` / `new Function`.
 - [x] Styles in `styles.css` with a plugin prefix; inline styles only for dynamic CSS variables.
@@ -285,3 +286,16 @@ Checked before submitting to the community plugin directory:
 - [x] `manifest.json` complete (`id` without "obsidian", description ending with a period), `versions.json`, `LICENSE` (MIT), `THIRD_PARTY_NOTICES.md` (elkjs, EPL-2.0) and licence notice in the `main.js` banner.
 - [x] `app.setting.open()` / `openTabById()` (internal API, no public alternative) is used only by *Open settings* and *Manage folders…*; if it is missing or fails, a notice tells the user how to open the settings.
 - [x] Translations other than English and Italian welcome review by native speakers through pull requests.
+- [x] Developer policies: no network access, telemetry, ads, accounts or payments; nothing outside the vault; third-party code (elkjs) attributed in the README and `THIRD_PARTY_NOTICES.md`.
+
+### Submitting to the community directory
+
+Plugins are submitted through the Obsidian community directory (not with a pull request to `obsidian-releases` any more):
+
+1. Publish a GitHub release whose tag equals the `manifest.json` version, with `main.js`, `manifest.json` and `styles.css` attached (the release workflow does this; publish the draft).
+2. Sign in at [community.obsidian.md](https://community.obsidian.md) with an Obsidian account and, on the profile page, **Connect** the GitHub account that owns the repository.
+3. **Plugins** → **New plugin**: repository URL `https://github.com/lucabersel/db-atlas`, owner, accept the developer policies, **Submit**.
+4. The directory runs an automated review. To fix a reported problem, change the code and publish a new release with a higher version.
+5. Once listed, new releases reach users as updates; announce the plugin in the forum's *Share & showcase* category or on Discord (`#updates`).
+
+References: [Submit your plugin](https://docs.obsidian.md/Plugins/Releasing/Submit+your+plugin), [Plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines), [Developer policies](https://docs.obsidian.md/Community+directory/Developer+policies).
