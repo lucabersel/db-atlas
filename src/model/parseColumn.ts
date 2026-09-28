@@ -1,6 +1,6 @@
 // Frontmatter `col_*` value → Column. Pure: no `obsidian` imports.
 
-import type { Column, Issue, Rel } from "../types";
+import type { Column, Issue, IssueCode, Rel } from "../types";
 
 export const COLUMN_PREFIX = "col_";
 export const RELS: readonly Rel[] = [">", "<", "-", "<>"];
@@ -23,25 +23,25 @@ function invalidColumn(name: string, issues: Issue[]): Column {
 export function parseColumn(key: string, rawValue: unknown, table: string): Column {
 	const name = key.startsWith(COLUMN_PREFIX) ? key.slice(COLUMN_PREFIX.length) : key;
 	const issues: Issue[] = [];
-	const error = (message: string) => invalidColumn(name, [...issues, { level: "error", message, table, column: name }]);
-	const warn = (message: string) => issues.push({ level: "warning", message, table, column: name });
+	const error = (code: IssueCode) => invalidColumn(name, [...issues, { level: "error", code, table, column: name }]);
+	const warn = (code: IssueCode, params?: Record<string, string>) => issues.push({ level: "warning", code, params, table, column: name });
 
 	let def: unknown;
 	if (typeof rawValue === "string") {
 		try {
 			def = JSON.parse(rawValue);
 		} catch {
-			return error("JSON non valido");
+			return error("issue.invalidJson");
 		}
 	} else if (isRecord(rawValue)) {
 		def = rawValue;
-		warn("Valore YAML non racchiuso tra apici: usare una stringa JSON tra apici singoli");
+		warn("issue.yamlObject");
 	} else {
-		return error("Definizione mancante o non valida: attesa una stringa JSON");
+		return error("issue.missingDefinition");
 	}
 
-	if (!isRecord(def)) return error("JSON non valido: atteso un oggetto");
-	if (typeof def.type !== "string" || def.type.trim() === "") return error("Chiave \"type\" mancante");
+	if (!isRecord(def)) return error("issue.notObject");
+	if (typeof def.type !== "string" || def.type.trim() === "") return error("issue.missingType");
 
 	const column: Column = {
 		name,
@@ -68,7 +68,7 @@ export function parseColumn(key: string, rawValue: unknown, table: string): Colu
 			column.rel = def.rel as Rel;
 		} else {
 			column.rel = DEFAULT_REL;
-			warn(`"rel" non valido (${JSON.stringify(def.rel)}): usato "${DEFAULT_REL}"`);
+			warn("issue.invalidRel", { value: JSON.stringify(def.rel) });
 		}
 	}
 

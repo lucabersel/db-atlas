@@ -1,5 +1,6 @@
-import { debounce, Notice, Plugin, TFile, WorkspaceLeaf } from "obsidian";
-import { normalizeData } from "./data";
+import { debounce, getLanguage as getObsidianLanguage, moment, Notice, Plugin, TFile, WorkspaceLeaf } from "obsidian";
+import { normalizeData, tableTemplate } from "./data";
+import { resolveLanguage, setLanguage, t } from "./i18n";
 import { setElkEngine } from "./layout/elkLayout";
 import { createWorkerElk } from "./layout/elkWorker";
 import { LayoutStore } from "./layout/layoutStore";
@@ -24,22 +25,26 @@ export default class DbAtlasPlugin extends Plugin {
 	/** Debounced save for frequent changes (table positions). */
 	readonly requestSave = debounce(() => void this.saveData(this.data), 1000, true);
 
+	private ribbonEl: HTMLElement | null = null;
+
 	async onload() {
 		this.data = normalizeData(await this.loadData());
+		this.applyLanguage();
 		this.layoutStore = new LayoutStore(this.data, () => this.requestSave());
 		setElkEngine(createWorkerElk);
 		this.addSettingTab(new DbAtlasSettingTab(this.app, this));
 
 		this.registerView(VIEW_TYPE_DB_ATLAS, (leaf) => new DbAtlasView(leaf, this));
 
-		this.addRibbonIcon(DB_ATLAS_ICON, "Apri diagramma DB Atlas", () => void this.activateView());
+		this.ribbonEl = this.addRibbonIcon(DB_ATLAS_ICON, t("ribbon.open"), () => void this.activateView());
 
-		this.addCommand({ id: "open", name: "Apri diagramma", callback: () => void this.activateView() });
-		this.addCommand({ id: "open-tab", name: "Apri diagramma in una tab", callback: () => void this.activateView("tab") });
-		this.addCommand({ id: "open-right", name: "Apri diagramma nella sidebar destra", callback: () => void this.activateView("right") });
-		this.addCommand({ id: "open-left", name: "Apri diagramma nella sidebar sinistra", callback: () => void this.activateView("left") });
+		// Command names are fixed at registration: a language change applies after restarting Obsidian.
+		this.addCommand({ id: "open", name: t("command.open"), callback: () => void this.activateView() });
+		this.addCommand({ id: "open-tab", name: t("command.openTab"), callback: () => void this.activateView("tab") });
+		this.addCommand({ id: "open-right", name: t("command.openRight"), callback: () => void this.activateView("right") });
+		this.addCommand({ id: "open-left", name: t("command.openLeft"), callback: () => void this.activateView("left") });
 
-		this.addCommand({ id: "new-table", name: "Nuova tabella", callback: () => this.newTable() });
+		this.addCommand({ id: "new-table", name: t("command.newTable"), callback: () => this.newTable() });
 
 		registerRenameHandler(this);
 	}
@@ -52,6 +57,18 @@ export default class DbAtlasPlugin extends Plugin {
 	async saveSettings(): Promise<void> {
 		await this.saveData(this.data);
 		for (const view of this.getViews()) view.onSettingsChanged();
+	}
+
+	/** Obsidian's interface language (`getLanguage` exists since 1.8.7; moment follows the app language). */
+	private appLanguage(): string {
+		return typeof getObsidianLanguage === "function" ? getObsidianLanguage() : moment.locale();
+	}
+
+	/** Applies the language setting to the plugin interface (open views and the ribbon included). */
+	applyLanguage(): void {
+		setLanguage(resolveLanguage(this.data.settings.language, this.appLanguage()));
+		this.ribbonEl?.setAttr("aria-label", t("ribbon.open"));
+		for (const view of this.getViews()) view.onLanguageChanged();
 	}
 
 	openSettings(): void {
@@ -81,7 +98,7 @@ export default class DbAtlasPlugin extends Plugin {
 			for (const l of existing) l.detach();
 			leaf = this.createLeaf(location ?? this.data.settings.viewLocation);
 			if (!leaf) {
-				new Notice("DB Atlas: impossibile aprire la vista in quella posizione");
+				new Notice(t("notice.cannotOpenView"));
 				return;
 			}
 			await leaf.setViewState({ type: VIEW_TYPE_DB_ATLAS, active: true });
@@ -100,7 +117,7 @@ export default class DbAtlasPlugin extends Plugin {
 		}
 		const folders = this.data.settings.dbFolders.filter((f) => this.getDbFolder(f) !== null);
 		if (folders.length === 0) {
-			new Notice("DB Atlas: nessuna cartella-DB configurata (vedi impostazioni).");
+			new Notice(t("notice.noDbFolders"));
 			return;
 		}
 		new FolderPickerModal(this.app, folders, (folder) => this.promptNewTable(folder)).open();
@@ -113,7 +130,7 @@ export default class DbAtlasPlugin extends Plugin {
 	private promptNewTable(folderPath: string): void {
 		const folder = this.getDbFolder(folderPath);
 		if (!folder) {
-			new Notice(`DB Atlas: la cartella "${folderPath}" non esiste.`);
+			new Notice(t("notice.folderMissing", { folder: folderPath }));
 			return;
 		}
 		// Every direct child name counts (not only .md), so the new file cannot collide.
@@ -125,11 +142,11 @@ export default class DbAtlasPlugin extends Plugin {
 
 	private async createTable(folder: string, name: string): Promise<void> {
 		try {
-			const file = await this.app.vault.create(tableNotePath(folder, name), fillTemplate(this.data.settings.newTableTemplate, name));
+			const file = await this.app.vault.create(tableNotePath(folder, name), fillTemplate(tableTemplate(this.data.settings), name));
 			await openFile(this.app, file, this.getViews()[0]?.leaf);
 		} catch (err) {
 			console.error("[db-atlas] could not create table note", err);
-			new Notice(`DB Atlas: impossibile creare la tabella "${name}".`);
+			new Notice(t("notice.createFailed", { name }));
 		}
 	}
 

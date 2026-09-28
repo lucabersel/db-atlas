@@ -3,6 +3,7 @@
 import { Notice, TAbstractFile, TFile, TFolder } from "obsidian";
 import { parentPath } from "../data";
 import type DbAtlasPlugin from "../main";
+import { t } from "../i18n";
 import { hasRefsTo, renameFolderInData, renameTableInLayouts, rewriteFrontmatterRefs } from "./renameLogic";
 
 function tableName(path: string): string {
@@ -63,6 +64,6 @@ async function rewriteRefsInFolder(plugin: DbAtlasPlugin, folderPath: string, ol
 		}
 	}
 
-	if (updated > 0) new Notice(`DB Atlas: riferimenti a "${oldName}" aggiornati in ${updated} ${updated === 1 ? "nota" : "note"}.`);
-	if (failed > 0) new Notice(`DB Atlas: impossibile aggiornare i riferimenti in ${failed} ${failed === 1 ? "nota" : "note"} (vedi console).`);
+	if (updated > 0) new Notice(t("notice.refsUpdated", { table: oldName, count: updated }));
+	if (failed > 0) new Notice(t("notice.refsFailed", { count: failed }));
 }

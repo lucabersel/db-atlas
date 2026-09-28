@@ -2,7 +2,7 @@
 
 import type { Table, TablePosition } from "../types";
 import { readableTextColor, resolveCssColor } from "./color";
-import { EMPTY_TABLE_TEXT, HEADER_DESC_HEIGHT, HEADER_NAME_HEIGHT, PAD_X, ROW_HEIGHT, type TableGeometry } from "./tableGeometry";
+import { emptyTableText, HEADER_DESC_HEIGHT, HEADER_NAME_HEIGHT, PAD_X, ROW_HEIGHT, type TableGeometry } from "./tableGeometry";
 
 export const TABLE_RADIUS = 6;
 
@@ -67,7 +67,7 @@ export function renderTable(parent: SVGElement, table: Table, g: TableGeometry, 
 		text(rowEl, "dba-col-type", g.width - PAD_X, cy, row.typeText, "end");
 	}
 	if (g.rows.length === 0) {
-		text(rows, ["dba-col-name", "dba-empty-row"], PAD_X, g.headerHeight + ROW_HEIGHT / 2, EMPTY_TABLE_TEXT);
+		text(rows, ["dba-col-name", "dba-empty-row"], PAD_X, g.headerHeight + ROW_HEIGHT / 2, emptyTableText());
 	}
 
 	root.createSvg("rect", { cls: "dba-table-border", attr: { width: g.width, height: g.height, rx: TABLE_RADIUS } });

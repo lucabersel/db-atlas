@@ -11,7 +11,8 @@ import {
 	TFile,
 	TFolder,
 } from "obsidian";
-import { DEFAULT_TABLE_TEMPLATE, moveItem, normalizeFolderPath } from "./data";
+import { defaultTableTemplate, moveItem, normalizeFolderPath, tableTemplate } from "./data";
+import { AUTO_LANGUAGE, LANGUAGES, t } from "./i18n";
 import type DbAtlasPlugin from "./main";
 import type { ViewLocation } from "./types";
 
@@ -118,8 +119,9 @@ export class DbAtlasSettingTab extends PluginSettingTab {
 	display(): void {
 		const { containerEl } = this;
 		containerEl.empty();
-		this.displayFolders(section(containerEl, "Gestione cartelle", "dba-settings-folders").el);
-		const others = section(containerEl, "Altre opzioni", "dba-settings-others");
+		this.displayFolders(section(containerEl, t("settings.folders.heading"), "dba-settings-folders").el);
+		const others = section(containerEl, t("settings.others.heading"), "dba-settings-others");
+		this.displayLanguage(others.add);
 		this.displayViewLocation(others.add);
 		this.displayTemplate(others.add);
 	}
@@ -129,14 +131,14 @@ export class DbAtlasSettingTab extends PluginSettingTab {
 
 		containerEl.createEl("p", {
 			cls: ["setting-item-description", "dba-settings-intro"],
-			text: "Ogni cartella rappresenta un database: le note figlie dirette sono le tabelle. Le sottocartelle vengono ignorate. L'ordine della lista è quello del menu delle cartelle nel diagramma.",
+			text: t("settings.folders.desc"),
 		});
 
 		// Add row above the list.
 		const addEl = containerEl.createDiv();
 		const listEl = containerEl.createDiv({ cls: "dba-folder-list" });
 		if (settings.dbFolders.length === 0) {
-			listEl.createDiv({ cls: "dba-folder-list-empty", text: "Nessuna cartella configurata." });
+			listEl.createDiv({ cls: "dba-folder-list-empty", text: t("settings.folders.empty") });
 		}
 
 		const move = async (index: number, delta: number) => {
@@ -153,7 +155,7 @@ export class DbAtlasSettingTab extends PluginSettingTab {
 			rows.push(itemEl);
 
 			// Drag handle: the order is the one used by the folder menu of the diagram.
-			const handle = itemEl.createSpan({ cls: "dba-folder-handle", attr: { "aria-label": "Trascina per riordinare" } });
+			const handle = itemEl.createSpan({ cls: "dba-folder-handle", attr: { "aria-label": t("settings.folders.drag") } });
 			setIcon(handle, "grip-vertical");
 			handle.addEventListener("pointerdown", (e) => startReorder(e, rows, index, (to) => move(index, to - index)));
 
@@ -163,12 +165,12 @@ export class DbAtlasSettingTab extends PluginSettingTab {
 			const tables = folder ? folder.children.filter((f) => f instanceof TFile && f.extension === "md").length : 0;
 			itemEl.createSpan({
 				cls: "dba-folder-meta",
-				text: folder ? `${tables} ${tables === 1 ? "tabella" : "tabelle"}` : "non trovata",
+				text: folder ? t("settings.folders.tableCount", { count: tables }) : t("settings.folders.notFound"),
 			});
 
 			const remove = new ExtraButtonComponent(itemEl)
 				.setIcon("x")
-				.setTooltip("Rimuovi")
+				.setTooltip(t("settings.folders.remove"))
 				.onClick(async () => {
 					settings.dbFolders = settings.dbFolders.filter((f) => f !== path);
 					await this.plugin.saveSettings();
@@ -183,11 +185,11 @@ export class DbAtlasSettingTab extends PluginSettingTab {
 			if (pending.trim() === "") return;
 			const path = normalizeFolderPath(pending);
 			if (this.app.vault.getFolderByPath(path) === null) {
-				new Notice(`DB Atlas: la cartella "${path}" non esiste.`);
+				new Notice(t("notice.folderMissing", { folder: path }));
 				return;
 			}
 			if (settings.dbFolders.includes(path)) {
-				new Notice(`DB Atlas: "${path}" è già presente.`);
+				new Notice(t("notice.folderAlreadyAdded", { folder: path }));
 				return;
 			}
 			settings.dbFolders.push(path);
@@ -199,7 +201,7 @@ export class DbAtlasSettingTab extends PluginSettingTab {
 		new Setting(addEl)
 			.setClass("dba-folder-add")
 			.addSearch((search) => {
-				search.setPlaceholder("Cerca una cartella del vault…").onChange((v) => {
+				search.setPlaceholder(t("settings.folders.search")).onChange((v) => {
 					pending = v;
 					addButton?.setDisabled(v.trim() === "");
 				});
@@ -213,18 +215,40 @@ export class DbAtlasSettingTab extends PluginSettingTab {
 				}
 			})
 			.addButton((b) => {
-				addButton = b.setButtonText("Aggiungi").setCta().setDisabled(true).onClick(add);
+				addButton = b.setButtonText(t("settings.folders.add")).setCta().setDisabled(true).onClick(add);
 			});
+	}
+
+	private displayLanguage(add: AddSetting): void {
+		add((s) =>
+			s
+				.setName(t("settings.language.name"))
+				.setDesc(t("settings.language.desc"))
+				.addDropdown((d) => {
+					d.addOption(AUTO_LANGUAGE, t("settings.language.auto"));
+					for (const lang of LANGUAGES) d.addOption(lang.code, lang.name);
+					d.setValue(this.plugin.data.settings.language).onChange(async (v) => {
+						this.plugin.data.settings.language = v;
+						this.plugin.applyLanguage();
+						await this.plugin.saveSettings();
+						this.display();
+					});
+				}),
+		);
 	}
 
 	private displayViewLocation(add: AddSetting): void {
 		add((s) =>
 			s
-				.setName("Posizione apertura vista")
-				.setDesc("Dove aprire il diagramma con il comando predefinito e l'icona nella barra laterale.")
+				.setName(t("settings.viewLocation.name"))
+				.setDesc(t("settings.viewLocation.desc"))
 				.addDropdown((d) =>
 					d
-						.addOptions({ tab: "Tab principale", right: "Sidebar destra", left: "Sidebar sinistra" })
+						.addOptions({
+							tab: t("settings.viewLocation.tab"),
+							right: t("settings.viewLocation.right"),
+							left: t("settings.viewLocation.left"),
+						})
 						.setValue(this.plugin.data.settings.viewLocation)
 						.onChange(async (v) => {
 							this.plugin.data.settings.viewLocation = v as ViewLocation;
@@ -237,14 +261,14 @@ export class DbAtlasSettingTab extends PluginSettingTab {
 	private displayTemplate(add: AddSetting): void {
 		add((s) =>
 			s
-				.setName("Template nuova tabella")
-				.setDesc("Contenuto della nota creata dal comando \"Nuova tabella\". {{name}} viene sostituito col nome della tabella.")
+				.setName(t("settings.template.name"))
+				.setDesc(t("settings.template.desc"))
 				.addExtraButton((b) =>
 					b
 						.setIcon("rotate-ccw")
-						.setTooltip("Ripristina default")
+						.setTooltip(t("settings.template.reset"))
 						.onClick(async () => {
-							this.plugin.data.settings.newTableTemplate = DEFAULT_TABLE_TEMPLATE;
+							this.plugin.data.settings.newTableTemplate = "";
 							await this.plugin.saveSettings();
 							this.display();
 						}),
@@ -252,13 +276,14 @@ export class DbAtlasSettingTab extends PluginSettingTab {
 		);
 
 		add((s) =>
-			s.setClass("dba-setting-template").addTextArea((t) => {
-				t.setValue(this.plugin.data.settings.newTableTemplate).onChange(async (v) => {
-					this.plugin.data.settings.newTableTemplate = v;
+			s.setClass("dba-setting-template").addTextArea((area) => {
+				// Shows the built-in template (in the current language) until it is customized.
+				area.setValue(tableTemplate(this.plugin.data.settings)).onChange(async (v) => {
+					this.plugin.data.settings.newTableTemplate = v === defaultTableTemplate() ? "" : v;
 					await this.plugin.saveSettings();
 				});
-				t.inputEl.rows = 12;
-				t.inputEl.spellcheck = false;
+				area.inputEl.rows = 12;
+				area.inputEl.spellcheck = false;
 			}),
 		);
 	}

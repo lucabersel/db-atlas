@@ -1,19 +1,21 @@
 // New table name validation and template filling. Pure.
 
+export type TableNameError = "name.empty" | "name.dot" | "name.chars" | "name.duplicate";
+
 /** Characters not allowed in file names on some platforms or that break Obsidian links. */
 const FORBIDDEN_CHARS = /[\\/:*?"<>|#^[\]]/;
 
 /**
- * Error message for an invalid new table name, or null if valid.
+ * Translation key of the error for an invalid new table name, or null if valid.
  * Duplicates are checked case-insensitively: "Clienti.md" and "clienti.md" collide on Windows/macOS.
  */
-export function validateTableName(name: string, existingNames: string[]): string | null {
+export function validateTableName(name: string, existingNames: string[]): TableNameError | null {
 	const n = name.trim();
-	if (n === "") return "Inserisci un nome.";
-	if (n.includes(".")) return "Il nome non può contenere \".\".";
-	if (FORBIDDEN_CHARS.test(n)) return "Il nome contiene caratteri non ammessi: \\ / : * ? \" < > | # ^ [ ]";
+	if (n === "") return "name.empty";
+	if (n.includes(".")) return "name.dot";
+	if (FORBIDDEN_CHARS.test(n)) return "name.chars";
 	const lower = n.toLowerCase();
-	if (existingNames.some((e) => e.toLowerCase() === lower)) return `Esiste già una nota "${n}" in questa cartella.`;
+	if (existingNames.some((e) => e.toLowerCase() === lower)) return "name.duplicate";
 	return null;
 }
 

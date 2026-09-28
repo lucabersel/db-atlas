@@ -1,5 +1,6 @@
 // Table box sizes and row positions. Pure: text widths come from an injected measure function.
 
+import { t } from "../i18n";
 import type { Column, Table } from "../types";
 
 export type FontRole = "tableName" | "tableDesc" | "colName" | "colType";
@@ -19,7 +20,10 @@ export const MAX_DESC_WIDTH = 320;
 export const WARNING_ICON = "⚠️";
 export const PK_ICON = "🔑";
 export const FK_ICON = "🔗";
-export const EMPTY_TABLE_TEXT = "nessun campo";
+/** Placeholder row of a table without columns (translated). */
+export function emptyTableText(): string {
+	return t("diagram.noColumns");
+}
 export const INVALID_TYPE_TEXT = "—";
 
 export interface RowGeometry {
@@ -88,7 +92,7 @@ export function computeTableGeometry(table: Table, measure: Measure): TableGeome
 		width = Math.max(width, nameX + nameWidth + NAME_TYPE_GAP + measure(r.typeText, "colType") + PAD_X);
 	}
 	if (rowsData.length === 0) {
-		width = Math.max(width, PAD_X + measure(EMPTY_TABLE_TEXT, "colName") + PAD_X);
+		width = Math.max(width, PAD_X + measure(emptyTableText(), "colName") + PAD_X);
 	}
 	width = Math.ceil(width);
 

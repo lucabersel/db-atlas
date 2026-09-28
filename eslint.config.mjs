@@ -39,6 +39,7 @@ export default tseslint.config(
 			"src/types.ts",
 			"src/data.ts",
 			"src/layout/**/*.ts",
+			"src/i18n/**/*.ts",
 			"src/sync/markdownHeadings.ts",
 			"src/sync/renameLogic.ts",
 			"src/view/tooltipText.ts",

@@ -1,4 +1,5 @@
 import { App, SuggestModal } from "obsidian";
+import { t } from "../i18n";
 
 /** Picks one of the configured DB folders. */
 export class FolderPickerModal extends SuggestModal<string> {
@@ -8,7 +9,7 @@ export class FolderPickerModal extends SuggestModal<string> {
 		private readonly onChoose: (folder: string) => void,
 	) {
 		super(app);
-		this.setPlaceholder("Scegli la cartella-DB in cui creare la tabella");
+		this.setPlaceholder(t("folderPicker.placeholder"));
 	}
 
 	getSuggestions(query: string): string[] {

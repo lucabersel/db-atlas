@@ -1,8 +1,32 @@
 // Defaults and normalization of data.json. Pure: no `obsidian` imports.
 
+import { AUTO_LANGUAGE, t } from "./i18n";
 import type { DbAtlasData, DbAtlasSettings, FolderLayout, ViewLocation } from "./types";
 
-export const DEFAULT_TABLE_TEMPLATE = `---
+/** Built-in new table template, in the current language. */
+export function defaultTableTemplate(): string {
+	return `---
+table_description: ""
+col_id: '{"type":"int","pk":true,"increment":true}'
+---
+
+# {{name}}
+
+## id
+${t("template.primaryKey")}
+`;
+}
+
+/** Template to use for a new table: the custom one, or the built-in one. */
+export function tableTemplate(settings: DbAtlasSettings): string {
+	return settings.newTableTemplate || defaultTableTemplate();
+}
+
+/**
+ * Default template saved by versions before translations (Italian): treated as "no custom template"
+ * so that it follows the chosen language.
+ */
+const LEGACY_DEFAULT_TEMPLATE = `---
 table_description: ""
 col_id: '{"type":"int","pk":true,"increment":true}'
 ---
@@ -17,8 +41,9 @@ export const VIEW_LOCATIONS: readonly ViewLocation[] = ["tab", "right", "left"];
 
 export const DEFAULT_SETTINGS: DbAtlasSettings = {
 	dbFolders: [],
+	language: AUTO_LANGUAGE,
 	viewLocation: "tab",
-	newTableTemplate: DEFAULT_TABLE_TEMPLATE,
+	newTableTemplate: "",
 };
 
 export function defaultData(): DbAtlasData {
@@ -83,7 +108,10 @@ export function normalizeData(raw: unknown): DbAtlasData {
 	if (VIEW_LOCATIONS.includes(s.viewLocation as ViewLocation)) {
 		data.settings.viewLocation = s.viewLocation as ViewLocation;
 	}
-	if (typeof s.newTableTemplate === "string") {
+	if (typeof s.language === "string" && s.language.trim() !== "") {
+		data.settings.language = s.language;
+	}
+	if (typeof s.newTableTemplate === "string" && s.newTableTemplate !== LEGACY_DEFAULT_TEMPLATE) {
 		data.settings.newTableTemplate = s.newTableTemplate;
 	}
 

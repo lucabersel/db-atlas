@@ -1,4 +1,5 @@
 import { App, Modal, Setting, TextComponent } from "obsidian";
+import { t } from "../i18n";
 import { validateTableName } from "../model/tableName";
 
 /** Asks for the name of a new table (no ".", no duplicates in the folder). */
@@ -16,18 +17,18 @@ export class NewTableModal extends Modal {
 	}
 
 	onOpen(): void {
-		this.setTitle("Nuova tabella");
+		this.setTitle(t("newTable.title"));
 		const { contentEl } = this;
-		contentEl.createEl("p", { cls: "dba-modal-hint", text: `Cartella-DB: ${this.folder}` });
+		contentEl.createEl("p", { cls: "dba-modal-hint", text: t("newTable.folder", { folder: this.folder }) });
 
 		let input: TextComponent | null = null;
-		new Setting(contentEl).setName("Nome tabella").addText((t) => {
-			input = t;
-			t.setPlaceholder("es. clienti").onChange((v) => {
+		new Setting(contentEl).setName(t("newTable.name")).addText((text) => {
+			input = text;
+			text.setPlaceholder(t("newTable.placeholder")).onChange((v) => {
 				this.name = v;
-				this.showError(v.trim() === "" ? null : validateTableName(v, this.existingNames));
+				this.showError(v.trim() === "" ? null : this.errorText(v));
 			});
-			t.inputEl.addEventListener("keydown", (e) => {
+			text.inputEl.addEventListener("keydown", (e) => {
 				if (e.key === "Enter" && !e.isComposing) {
 					e.preventDefault();
 					this.submit();
@@ -37,8 +38,8 @@ export class NewTableModal extends Modal {
 		this.errorEl = contentEl.createDiv({ cls: ["dba-modal-error", "dba-hidden"] });
 
 		new Setting(contentEl)
-			.addButton((b) => b.setButtonText("Annulla").onClick(() => this.close()))
-			.addButton((b) => b.setButtonText("Crea").setCta().onClick(() => this.submit()));
+			.addButton((b) => b.setButtonText(t("newTable.cancel")).onClick(() => this.close()))
+			.addButton((b) => b.setButtonText(t("newTable.create")).setCta().onClick(() => this.submit()));
 
 		window.setTimeout(() => (input as TextComponent | null)?.inputEl.focus(), 0);
 	}
@@ -48,13 +49,18 @@ export class NewTableModal extends Modal {
 	}
 
 	private submit(): void {
-		const error = validateTableName(this.name, this.existingNames);
+		const error = this.errorText(this.name);
 		if (error) {
 			this.showError(error);
 			return;
 		}
 		this.close();
 		this.onSubmit(this.name.trim());
+	}
+
+	private errorText(name: string): string | null {
+		const code = validateTableName(name, this.existingNames);
+		return code === null ? null : t(code, { name: name.trim() });
 	}
 
 	private showError(message: string | null): void {

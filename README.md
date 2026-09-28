@@ -6,7 +6,7 @@ Each table note keeps the column definitions in its properties and free-form not
 
 ![DB Atlas diagram](docs/screenshot.png)
 
-> The plugin interface is currently in Italian.
+> Available in English, 中文, हिन्दी, Español, Français, العربية, বাংলা, Português, Русский, 日本語, Deutsch, Bahasa Indonesia and Italiano (follows Obsidian's language by default).
 
 ## Features
 
@@ -34,8 +34,8 @@ Download `main.js`, `manifest.json` and `styles.css` from the [latest release](h
 
 1. Create a folder for your database, e.g. `Sales`.
 2. In *Settings → DB Atlas*, add it to the DB folders.
-3. Run **DB Atlas: Nuova tabella** (new table) and give it a name, or create notes in the folder yourself.
-4. Open the diagram with the ribbon icon or **DB Atlas: Apri diagramma**.
+3. Run **DB Atlas: New table** and give it a name, or create notes in the folder yourself.
+4. Open the diagram with the ribbon icon or **DB Atlas: Open diagram**.
 
 Every Markdown note directly inside a DB folder is a table (subfolders are ignored). **The table name is the file name.**
 
@@ -119,15 +119,16 @@ Ctrl/Cmd-click opens the note in a new tab. The toolbar has the DB folder menu, 
 
 | Command | Action |
 |---|---|
-| Apri diagramma | Open the diagram in the default location |
-| Apri diagramma in una tab / nella sidebar destra / nella sidebar sinistra | Open the diagram in a specific location |
-| Nuova tabella | Create a table note from the template in the current DB folder (the one shown in the diagram, or chosen from a list) |
+| Open diagram | Open the diagram in the default location |
+| Open diagram in a new tab / in the right sidebar / in the left sidebar | Open the diagram in a specific location |
+| New table | Create a table note from the template in the current DB folder (the one shown in the diagram, or chosen from a list) |
 
 ## Settings
 
 - **DB folders**: the folders that represent a database. Drag to reorder: the order is used by the folder menu of the diagram.
-- **View location**: main tab, right sidebar or left sidebar.
-- **New table template**: content of new table notes; `{{name}}` is replaced by the table name.
+- **Language**: automatic (Obsidian's language) or one of the available languages. Command names change after restarting Obsidian.
+- **Diagram location**: main tab, right sidebar or left sidebar.
+- **New table template**: content of new table notes; `{{name}}` is replaced by the table name. Until you edit it, the built-in template follows the language.
 
 Settings and table positions are stored in the plugin's `data.json`. Renaming a table note updates the references to it in the other notes of the folder (and its saved position); renaming or moving a DB folder updates the settings. Renaming a column is not propagated.
 

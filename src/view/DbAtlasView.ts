@@ -1,4 +1,5 @@
 import { ItemView, Menu, setIcon, WorkspaceLeaf } from "obsidian";
+import { t } from "../i18n";
 import type DbAtlasPlugin from "../main";
 import { SchemaWatcher } from "../model/schemaLoader";
 import type { Schema } from "../types";
@@ -77,6 +78,13 @@ export class DbAtlasView extends ItemView {
 		this.diagram.onResize();
 	}
 
+	/** Called by the plugin when the interface language changes. */
+	onLanguageChanged(): void {
+		this.diagram.refreshLanguage();
+		this.render();
+		this.watcher.refresh(); // re-shows the current message, if any
+	}
+
 	/** Called by the plugin whenever settings are saved. */
 	onSettingsChanged(): void {
 		const folders = this.plugin.data.settings.dbFolders;
@@ -103,7 +111,7 @@ export class DbAtlasView extends ItemView {
 		const last = this.plugin.data.lastFolder;
 		const selected = this.folder !== null && folders.includes(this.folder) ? this.folder : last && folders.includes(last) ? last : folders[0];
 
-		const button = this.toolbarEl.createEl("button", { cls: "dba-folder-button", attr: { "aria-label": "Cartella-DB", "aria-haspopup": "menu" } });
+		const button = this.toolbarEl.createEl("button", { cls: "dba-folder-button", attr: { "aria-label": t("view.folderMenu"), "aria-haspopup": "menu" } });
 		setIcon(button.createSpan({ cls: "dba-folder-button-icon" }), "database");
 		this.folderLabelEl = button.createSpan({ cls: "dba-folder-button-label" });
 		setIcon(button.createSpan({ cls: "dba-folder-button-chevron" }), "chevron-down");
@@ -112,9 +120,9 @@ export class DbAtlasView extends ItemView {
 
 		this.toolbarEl.createDiv({ cls: "dba-toolbar-spacer" });
 		this.zoomButtons = [
-			this.addToolbarButton("zoom-in", "Zoom +", () => this.diagram.zoomIn()),
-			this.addToolbarButton("zoom-out", "Zoom −", () => this.diagram.zoomOut()),
-			this.addToolbarButton("maximize", "Adatta alla vista", () => this.diagram.fit()),
+			this.addToolbarButton("zoom-in", t("view.zoomIn"), () => this.diagram.zoomIn()),
+			this.addToolbarButton("zoom-out", t("view.zoomOut"), () => this.diagram.zoomOut()),
+			this.addToolbarButton("maximize", t("view.fit"), () => this.diagram.fit()),
 		];
 
 		this.selectFolder(selected);
@@ -142,7 +150,7 @@ export class DbAtlasView extends ItemView {
 		menu.addSeparator();
 		menu.addItem((item) =>
 			item
-				.setTitle("Gestisci cartelle…")
+				.setTitle(t("view.manageFolders"))
 				.setIcon("settings")
 				.onClick(() => this.plugin.openSettings()),
 		);
@@ -169,11 +177,11 @@ export class DbAtlasView extends ItemView {
 
 	private onSchema(schema: Schema | null): void {
 		if (!schema) {
-			this.showMessage(`La cartella "${this.folder}" non esiste nel vault.`);
+			this.showMessage(t("view.folderMissing", { folder: this.folder ?? "" }));
 			return;
 		}
 		if (schema.tables.length === 0) {
-			this.showMessage(`La cartella "${schema.folder}" non contiene note.`);
+			this.showMessage(t("view.folderEmpty", { folder: schema.folder }));
 			return;
 		}
 		this.showDiagram(true);
@@ -190,12 +198,12 @@ export class DbAtlasView extends ItemView {
 	private renderNoFolders(): void {
 		this.showDiagram(false);
 		this.messageEl.empty();
-		this.messageEl.createEl("p", { text: "Nessuna cartella-DB configurata." });
+		this.messageEl.createEl("p", { text: t("view.noFolders") });
 		this.messageEl.createEl("p", {
 			cls: "dba-empty-hint",
-			text: "Aggiungi nelle impostazioni le cartelle che rappresentano un database.",
+			text: t("view.noFoldersHint"),
 		});
-		this.messageEl.createEl("button", { cls: "mod-cta", text: "Apri impostazioni" }).addEventListener("click", () => {
+		this.messageEl.createEl("button", { cls: "mod-cta", text: t("view.openSettings") }).addEventListener("click", () => {
 			this.plugin.openSettings();
 		});
 	}

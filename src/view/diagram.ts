@@ -10,6 +10,7 @@ import { type LayoutEdge, placeMissing, type SizedNode } from "../layout/elkLayo
 import type { LayoutStore } from "../layout/layoutStore";
 import { type EdgeSpec, type RouteChanges, RoutingModel } from "../layout/routingModel";
 import type { Rect } from "../layout/spatialGrid";
+import { t } from "../i18n";
 import type { Column, Schema, Table, TablePosition } from "../types";
 import { type EndKind, endKinds } from "./edgeGeometry";
 import { DiagramInteractions } from "./interactions";
@@ -107,7 +108,7 @@ export class Diagram {
 		this.edgesLayer = this.world.createSvg("g", { cls: "dba-edges" });
 		this.tablesLayer = this.world.createSvg("g", { cls: "dba-tables" });
 
-		this.busyEl = container.createDiv({ cls: ["dba-busy", "dba-hidden"], text: "Disposizione delle tabelle…" });
+		this.busyEl = container.createDiv({ cls: ["dba-busy", "dba-hidden"], text: t("view.layingOut") });
 		this.measurer = new TextMeasurer(this.svg);
 		this.interactions = new DiagramInteractions(this.svg, container, {
 			lookupTable: (name) => this.tables.get(name),
@@ -161,6 +162,12 @@ export class Diagram {
 		this.applyModel();
 		if (fit) this.fit();
 		else this.scheduleSync();
+	}
+
+	/** Redraws the texts in the current language. */
+	refreshLanguage(): void {
+		this.busyEl.setText(t("view.layingOut"));
+		this.refreshStyles();
 	}
 
 	/** Redraws with fresh font metrics (theme / font change). */

@@ -74,7 +74,7 @@ describe("parseColumn", () => {
 		expect(c.name).toBe("rotto");
 		expect(c.valid).toBe(false);
 		expect(c.type).toBe("");
-		expect(c.issues).toEqual([{ level: "error", message: expect.any(String), table: "t", column: "rotto" }]);
+		expect(c.issues).toEqual([{ level: "error", code: "issue.invalidJson", table: "t", column: "rotto" }]);
 	});
 
 	it("marks JSON that is not an object as an error", () => {

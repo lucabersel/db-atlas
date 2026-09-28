@@ -1,6 +1,7 @@
 // Opening a table note, or a column's `## campo` heading (created at the end of the note if missing).
 
 import { App, Keymap, Notice, TFile, WorkspaceLeaf } from "obsidian";
+import { t } from "../i18n";
 import { appendHeading, findHeadingLine } from "./markdownHeadings";
 
 /**
@@ -16,7 +17,7 @@ function targetLeaf(app: App, evt?: MouseEvent, avoid?: WorkspaceLeaf): Workspac
 
 function getFile(app: App, path: string): TFile | null {
 	const file = app.vault.getFileByPath(path);
-	if (!file) new Notice(`DB Atlas: nota "${path}" non trovata.`);
+	if (!file) new Notice(t("notice.noteMissing", { path }));
 	return file;
 }
 

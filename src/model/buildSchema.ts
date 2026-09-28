@@ -1,6 +1,6 @@
 // Table[] of one DB folder → Schema with resolved relations. Pure: no `obsidian` imports.
 
-import type { Column, Relation, Schema, Table } from "../types";
+import type { Column, IssueCode, Relation, Schema, Table } from "../types";
 import { DEFAULT_REL } from "./parseColumn";
 
 /** Splits `tabella.campo`; null unless there is exactly one `.` with text on both sides. */
@@ -24,21 +24,21 @@ export function buildSchema(folder: string, tables: Table[]): Schema {
 			const out: Column = { ...col, issues: [...col.issues] };
 			if (!col.valid || col.ref === undefined) return out;
 
-			const warn = (message: string) =>
-				out.issues.push({ level: "warning", message, table: table.name, column: col.name });
+			const warn = (code: IssueCode, params: Record<string, string>) =>
+				out.issues.push({ level: "warning", code, params, table: table.name, column: col.name });
 
 			const target = splitRef(col.ref);
 			if (!target) {
-				warn(`Ref malformato "${col.ref}": atteso "tabella.campo"`);
+				warn("issue.refMalformed", { ref: col.ref });
 				return out;
 			}
 			const targetTable = byName.get(target.table);
 			if (!targetTable) {
-				warn(`Ref rotto: tabella "${target.table}" inesistente in questa cartella`);
+				warn("issue.refMissingTable", { table: target.table });
 				return out;
 			}
 			if (!targetTable.columns.some((c) => c.name === target.column)) {
-				warn(`Ref rotto: campo "${target.column}" inesistente in "${target.table}"`);
+				warn("issue.refMissingColumn", { column: target.column, table: target.table });
 				return out;
 			}
 

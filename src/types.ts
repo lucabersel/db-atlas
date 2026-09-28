@@ -1,13 +1,20 @@
 // Data model shared by parser, loader and view. No `obsidian` imports here.
 
+import type { MessageKey } from "./i18n";
+
 /** Cardinality read from the FK side (see PROJECT.md §4.5). */
 export type Rel = ">" | "<" | "-" | "<>";
 
 export type IssueLevel = "error" | "warning";
 
+export type IssueCode = Extract<MessageKey, `issue.${string}`>;
+
 export interface Issue {
 	level: IssueLevel;
-	message: string;
+	/** Translation key of the message (translated when shown, see tooltipText.ts). */
+	code: IssueCode;
+	/** Values for the message placeholders. */
+	params?: Record<string, string>;
 	table: string;
 	/** Set when the issue concerns a single column. */
 	column?: string;
@@ -66,7 +73,10 @@ export type ViewLocation = "tab" | "right" | "left";
 
 export interface DbAtlasSettings {
 	dbFolders: string[];
+	/** "auto" (Obsidian's language) or a language code, see i18n/index.ts. */
+	language: string;
 	viewLocation: ViewLocation;
+	/** Custom template; empty = built-in template in the current language. */
 	newTableTemplate: string;
 }
 

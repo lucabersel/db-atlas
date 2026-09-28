@@ -141,9 +141,11 @@ describe("new table", () => {
 		expect(validateTableName("  fatture  ", existing)).toBeNull();
 		expect(validateTableName("", existing)).not.toBeNull();
 		expect(validateTableName("   ", existing)).not.toBeNull();
-		expect(validateTableName("a.b", existing)).toMatch(/\./);
-		expect(validateTableName("clienti", existing)).toMatch(/già/);
-		expect(validateTableName("ordini", existing)).toMatch(/già/); // case-insensitive
+		expect(validateTableName("", existing)).toBe("name.empty");
+		expect(validateTableName("a.b", existing)).toBe("name.dot");
+		expect(validateTableName("a/b", existing)).toBe("name.chars");
+		expect(validateTableName("clienti", existing)).toBe("name.duplicate");
+		expect(validateTableName("ordini", existing)).toBe("name.duplicate"); // case-insensitive
 		for (const bad of ["a/b", "a\\b", "a:b", "a*b", "a?b", 'a"b', "a<b", "a|b", "a#b", "a^b", "a[b]"]) {
 			expect(validateTableName(bad, existing)).not.toBeNull();
 		}

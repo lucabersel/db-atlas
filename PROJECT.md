@@ -186,10 +186,11 @@ La vista si aggiorna automaticamente su creazione, modifica, eliminazione e rino
 
 | Impostazione | Tipo | Default |
 |---|---|---|
+| Lingua | `auto` \| codice lingua (vedi §6.1) | `auto` |
 | Posizione apertura vista | `tab` \| `right` \| `left` | `tab` |
-| Template nuova tabella | textarea, placeholder `{{name}}`, pulsante "Ripristina default" | vedi sotto |
+| Template nuova tabella | textarea, placeholder `{{name}}`, pulsante "Ripristina default" | template predefinito nella lingua corrente |
 
-Template di default:
+Template predefinito (in inglese; la riga sotto `## id` è tradotta nella lingua dell'interfaccia). Finché l'utente non lo modifica non viene salvato (`newTableTemplate: ""`), così segue la lingua scelta:
 
 ```markdown
 ---
@@ -200,10 +201,18 @@ col_id: '{"type":"int","pk":true,"increment":true}'
 # {{name}}
 
 ## id
-Chiave primaria.
+Primary key.
 ```
 
 Prefisso `col_` **non configurabile**.
+
+### 6.1 Lingue
+
+- Interfaccia tradotta in: inglese (riferimento), cinese semplificato, hindi, spagnolo, francese, arabo, bengalese, portoghese, russo, giapponese, tedesco, indonesiano, italiano.
+- `auto` segue la lingua di Obsidian (`getLanguage()` da 1.8.7, altrimenti `moment.locale()`); varianti regionali ricondotte alla lingua base (`pt-BR` → `pt`); lingua non supportata → inglese.
+- Il cambio si applica subito a impostazioni, vista e icona ribbon; i nomi dei comandi dopo il riavvio di Obsidian.
+- Traduzioni in `src/i18n/locales/`: segnaposto `{nome}`, plurali con le categorie di `Intl.PluralRules`. I messaggi di validazione sono codici (`issue.*`) tradotti al momento della visualizzazione. I test verificano che ogni lingua abbia tutte le chiavi e gli stessi segnaposto dell'inglese.
+- Il template predefinito salvato dalle versioni precedenti (italiano) viene riconosciuto e trattato come predefinito.
 
 ---
 
@@ -213,8 +222,9 @@ Prefisso `col_` **non configurabile**.
 interface DbAtlasData {
   settings: {
     dbFolders: string[];            // ordinate
+    language: string;               // 'auto' o codice lingua
     viewLocation: 'tab' | 'right' | 'left';
-    newTableTemplate: string;
+    newTableTemplate: string;       // '' = template predefinito nella lingua corrente
   };
   lastFolder?: string;
   layouts: {
@@ -266,6 +276,9 @@ src/
   data.ts                 // Default e normalizzazione di data.json            (puro)
   types.ts                // Modello dati (Table, Column, Relation, Issue, ...)
   elk-worker.d.ts         // Tipo del sorgente del worker ELK incorporato
+  i18n/
+    index.ts              // lingue supportate, t(), plurali                   (puro)
+    locales/*.ts          // una traduzione per lingua (en = riferimento)
   model/
     parseColumn.ts        // valore col_* → Column                             (puro)
     parseTable.ts         // frontmatter + nome file → Table                   (puro)
@@ -322,4 +335,4 @@ styles.css
 
 ## 10. Fuori scope v1
 
-Export SVG/PNG, ricerca tabelle, TableGroup, indici, enum, FK composte, editing campi dal diagramma, modal guidato per la creazione dei campi, evidenziazione relazioni in hover, sottocartelle, ref tra cartelle-DB diverse, propagazione rinomina campi, traduzioni dell'interfaccia.
+Export SVG/PNG, ricerca tabelle, TableGroup, indici, enum, FK composte, editing campi dal diagramma, modal guidato per la creazione dei campi, evidenziazione relazioni in hover, sottocartelle, ref tra cartelle-DB diverse, propagazione rinomina campi.

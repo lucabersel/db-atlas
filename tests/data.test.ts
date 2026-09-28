@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_TABLE_TEMPLATE, defaultData, moveItem, normalizeData, normalizeFolderPath } from "../src/data";
+import { defaultData, defaultTableTemplate, moveItem, normalizeData, normalizeFolderPath, tableTemplate } from "../src/data";
+import { setLanguage } from "../src/i18n";
 
 describe("normalizeFolderPath", () => {
 	it("strips surrounding slashes and whitespace", () => {
@@ -29,6 +30,31 @@ describe("moveItem", () => {
 	});
 });
 
+describe("table template", () => {
+	it("uses the built-in template in the current language when none is customized", () => {
+		setLanguage("it");
+		expect(defaultTableTemplate()).toContain("Chiave primaria.");
+		setLanguage("en");
+		expect(defaultTableTemplate()).toContain("Primary key.");
+		expect(tableTemplate(defaultData().settings)).toBe(defaultTableTemplate());
+		expect(tableTemplate({ ...defaultData().settings, newTableTemplate: "# {{name}}" })).toBe("# {{name}}");
+	});
+
+	it("treats the template saved by earlier versions as the built-in one", () => {
+		const legacy = `---
+table_description: ""
+col_id: '{"type":"int","pk":true,"increment":true}'
+---
+
+# {{name}}
+
+## id
+Chiave primaria.
+`;
+		expect(normalizeData({ settings: { newTableTemplate: legacy } }).settings.newTableTemplate).toBe("");
+	});
+});
+
 describe("normalizeData", () => {
 	it("returns defaults for missing or non-object data", () => {
 		for (const raw of [null, undefined, 42, "x", []]) {
@@ -38,7 +64,7 @@ describe("normalizeData", () => {
 
 	it("uses the default template and tab location", () => {
 		const d = normalizeData({});
-		expect(d.settings).toEqual({ dbFolders: [], viewLocation: "tab", newTableTemplate: DEFAULT_TABLE_TEMPLATE });
+		expect(d.settings).toEqual({ dbFolders: [], language: "auto", viewLocation: "tab", newTableTemplate: "" });
 		expect(d.layouts).toEqual({});
 		expect(d.lastFolder).toBeUndefined();
 	});
@@ -51,7 +77,7 @@ describe("normalizeData", () => {
 
 	it("keeps valid stored values", () => {
 		const raw = {
-			settings: { dbFolders: ["Gestionale", "Altro/DB"], viewLocation: "right", newTableTemplate: "# {{name}}" },
+			settings: { dbFolders: ["Gestionale", "Altro/DB"], language: "it", viewLocation: "right", newTableTemplate: "# {{name}}" },
 			lastFolder: "Gestionale",
 			layouts: { Gestionale: { tables: { clienti: { x: 10, y: -20.5 } } } },
 		};
@@ -62,7 +88,7 @@ describe("normalizeData", () => {
 		const d = normalizeData({ settings: { viewLocation: "left" } });
 		expect(d.settings.viewLocation).toBe("left");
 		expect(d.settings.dbFolders).toEqual([]);
-		expect(d.settings.newTableTemplate).toBe(DEFAULT_TABLE_TEMPLATE);
+		expect(d.settings.newTableTemplate).toBe("");
 	});
 
 	it("drops values of the wrong type", () => {

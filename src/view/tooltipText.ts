@@ -1,9 +1,10 @@
 // Tooltip contents. Pure.
 
+import { t } from "../i18n";
 import type { Column, Issue, Table } from "../types";
 
 function issueLine(i: Issue): string {
-	return `${i.level === "error" ? "❌" : "⚠️"} ${i.message}`;
+	return `${i.level === "error" ? "❌" : "⚠️"} ${t(i.code, i.params)}`;
 }
 
 /** `int · PK · NOT NULL · UNIQUE · AI · default: x · → agenti.id` (PROJECT.md §4.6), then one line per issue. */

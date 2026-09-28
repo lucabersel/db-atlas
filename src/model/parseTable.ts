@@ -22,12 +22,12 @@ export function parseTable(name: string, path: string, frontmatter: unknown): Ta
 		.map((key) => parseColumn(key, fm[key], name));
 
 	if (columns.length === 0) {
-		issues.push({ level: "warning", message: "Nessun campo (nessuna property col_*)", table: name });
+		issues.push({ level: "warning", code: "issue.noColumns", table: name });
 	}
 
 	const referenceable = !name.includes(".");
 	if (!referenceable) {
-		issues.push({ level: "warning", message: "Il nome contiene \".\": la tabella non è referenziabile", table: name });
+		issues.push({ level: "warning", code: "issue.dotInName", table: name });
 	}
 
 	return {
