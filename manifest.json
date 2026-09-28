@@ -1,0 +1,10 @@
+{
+	"id": "db-atlas",
+	"name": "DB Atlas",
+	"version": "0.1.0",
+	"minAppVersion": "1.5.7",
+	"description": "Document database schemas with one note per table and view them as an interactive ER diagram.",
+	"author": "Luca Berselli",
+	"isDesktopOnly": false,
+	"authorUrl": "https://github.com/lucabersel"
+}

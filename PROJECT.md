@@ -109,14 +109,17 @@ Qualsiasi property senza prefisso `col_` e diversa da `table_color` / `table_des
 - Colori da **variabili CSS di Obsidian** → light/dark automatico. Classi CSS prefisso `.dba-`.
 
 ### 4.4 Layout
-- Tabelle **senza posizione salvata**: posizionate con `elkjs` (`layered`), usato **solo per il posizionamento dei nodi**.
+- Tabelle **senza posizione salvata**: posizionate con `elkjs` (`layered`, opzioni veloci), usato **solo per il posizionamento dei nodi**, eseguito in un **Web Worker** per non bloccare l'interfaccia. Se il worker non è disponibile: posizionamento semplice a colonne.
 - **Drag** della tabella (dall'header) → nuova posizione salvata in `data.json`.
 - Unica modifica consentita dal diagramma: posizione tabelle. Nessuna scrittura nelle note dal diagramma (eccetto creazione heading, vedi 4.6).
 
 ### 4.5 Relazioni
 - Una linea per ogni campo con `ref` valido: **da riga FK a riga referenziata**.
-- Routing **ortogonale** con `libavoid-js` (evita le tabelle, separa linee parallele), sempre, sia al primo render sia durante/dopo il drag.
-- Ogni riga ha **due pin** (sinistro e destro) con lo stesso `classId` → il router sceglie il lato.
+- Routing **ortogonale** con un **router proprio** (`orthoRouter.ts`): evita le tabelle, separa le linee parallele, sempre, sia al primo render sia durante/dopo il drag.
+  - Ogni riga può uscire a **sinistra o a destra**: il router sceglie il lato (lati affacciati se le tabelle sono distanti in orizzontale, stesso lato se sovrapposte in orizzontale).
+  - Tratto orizzontale fisso ("stub") a ogni estremo per i marker di cardinalità.
+  - Percorso diretto a Z/C quando è libero; altrimenti ricerca A* su una griglia sparsa costruita dai bordi delle tabelle vicine (indice spaziale), con limite di espansioni.
+  - Durante il drag: percorsi rapidi solo per le linee della tabella trascinata; al rilascio, percorsi completi per quelle e per le linee che la tabella ora copre. Primo render: percorsi rapidi, poi rifinitura completa a blocchi di pochi ms per frame.
 - Self-reference: supportata (loop sullo stesso lato).
 - Angoli arrotondati sul path SVG.
 
@@ -223,11 +226,16 @@ interface DbAtlasData {
 
 - **TypeScript**, bundle **esbuild**, template `obsidian-sample-plugin`.
 - Rendering **SVG vanilla**, nessun framework UI.
-- `elkjs` (build bundled, senza web worker) per il posizionamento iniziale.
-- `libavoid-js` per il routing. Il file `.wasm` va **incorporato nel bundle** (esbuild loader `binary`) e caricato da Blob URL: Obsidian distribuisce solo `main.js`, `manifest.json`, `styles.css`.
+- `elkjs` per il posizionamento iniziale, in un **Web Worker**: lo script del worker è incorporato in `main.js` come testo e avviato da Blob URL (Obsidian distribuisce solo `main.js`, `manifest.json`, `styles.css`). Nessun `eval`/`new Function`.
+- Routing con router ortogonale proprio (nessuna dipendenza esterna, nessun wasm).
 - **Desktop e mobile** (`isDesktopOnly: false`): vietate API Node/Electron (`fs`, `path`, `require` di moduli Node). Usare solo API Obsidian.
 - Lettura frontmatter via `metadataCache` (non parsing manuale del file).
-- Distruggere il router libavoid al cambio cartella e alla chiusura della vista.
+- Terminare il worker ELK alla disattivazione del plugin.
+
+### 9.0 Prestazioni (requisito)
+- Il diagramma deve gestire **con facilità oltre 1000 tabelle**. Riferimento misurato (`npm run bench`, schema generato da 1000 tabelle / ~1900 relazioni): layout ELK < 1 s (una tantum, in worker), primo disegno linee < 100 ms, frame di drag < 16 ms anche per la tabella più collegata, nessuna linea sopra le tabelle.
+- Rendering con **culling** (nel DOM solo tabelle e linee visibili), **livelli di dettaglio** in base allo zoom (righe solo quando leggibili; da lontano solo intestazioni o riquadri) e **aggiornamenti incrementali** (si ridisegna solo ciò che è cambiato).
+- Nessun lavoro proporzionale all'intero diagramma durante pointermove.
 - Test unitari con **vitest** per parser e logica pura (nessuna dipendenza da Obsidian in quei moduli).
 
 ### 9.1 Struttura sorgenti suggerita
@@ -251,7 +259,10 @@ src/
     interactions.ts       // click/drag/long-press/tooltip
   layout/
     elkLayout.ts          // posizionamento iniziale
-    avoidRouter.ts        // wrapper libavoid-js
+    orthoRouter.ts        // router ortogonale + separazione linee parallele
+    routingModel.ts       // percorsi di tutte le linee, aggiornati in modo incrementale
+    spatialGrid.ts        // indice spaziale (culling, ostacoli)
+    elkWorker.ts          // ELK in Web Worker
   sync/
     renameHandler.ts      // propagazione rinomina
     headingNav.ts         // apertura/creazione heading campo

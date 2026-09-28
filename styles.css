@@ -1,0 +1,488 @@
+/* DB Atlas — all classes use the .dba- prefix and Obsidian CSS variables. */
+
+/* ---------- Settings ---------- */
+
+/* Description right under the "Gestione cartelle" heading, aligned with its text. */
+.dba-settings-folders .setting-item-heading,
+.setting-item-heading.dba-settings-folders {
+	margin-bottom: 0;
+	padding-bottom: var(--size-2-1);
+}
+
+.dba-settings-intro {
+	margin: 0 0 var(--size-4-3);
+	padding-inline: var(--size-4-4);
+}
+
+.dba-folder-list {
+	margin: var(--size-4-1) 0 var(--size-4-12);
+	border: var(--border-width) solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background-color: var(--background-primary-alt);
+	overflow: hidden;
+}
+
+.dba-folder-list-empty {
+	padding: var(--size-4-3) var(--size-4-4);
+	color: var(--text-faint);
+	font-size: var(--font-ui-small);
+	text-align: center;
+}
+
+.dba-folder-item {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-3);
+	min-height: 40px;
+	padding: var(--size-2-2) var(--size-4-2) var(--size-2-2) var(--size-4-3);
+}
+
+.dba-folder-item + .dba-folder-item {
+	border-top: var(--border-width) solid var(--background-modifier-border);
+}
+
+.dba-folder-item:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.dba-folder-icon {
+	display: flex;
+	color: var(--text-muted);
+	--icon-size: var(--icon-s);
+}
+
+.dba-folder-path {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: var(--font-ui-small);
+	color: var(--text-normal);
+}
+
+.dba-folder-meta {
+	flex-shrink: 0;
+	padding: 0 var(--size-4-2);
+	border-radius: var(--radius-s);
+	background-color: var(--background-modifier-border);
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	line-height: 1.6;
+}
+
+.dba-folder-item.is-missing .dba-folder-icon,
+.dba-folder-item.is-missing .dba-folder-meta {
+	color: var(--text-warning);
+}
+
+.dba-folder-item.is-missing .dba-folder-path {
+	color: var(--text-muted);
+	text-decoration: line-through;
+}
+
+.dba-folder-item .clickable-icon {
+	color: var(--text-faint);
+}
+
+.dba-folder-item .clickable-icon:hover {
+	color: var(--text-normal);
+}
+
+.dba-folder-item .clickable-icon.dba-folder-remove:hover {
+	color: var(--text-error);
+}
+
+.dba-folder-item {
+	position: relative;
+	transform: translateY(var(--dba-shift, 0));
+	transition: transform 150ms ease;
+}
+
+.dba-folder-item.is-dragging {
+	z-index: 1;
+	transform: translateY(var(--dba-drag-y, 0));
+	transition: none;
+	background-color: var(--background-primary);
+	box-shadow: var(--shadow-s);
+}
+
+.dba-folder-handle {
+	display: flex;
+	margin-left: calc(-1 * var(--size-4-1));
+	color: var(--text-faint);
+	cursor: grab;
+	touch-action: none;
+	--icon-size: var(--icon-s);
+}
+
+.dba-folder-handle:hover {
+	color: var(--text-muted);
+}
+
+.dba-folder-item.is-dragging .dba-folder-handle {
+	cursor: grabbing;
+}
+
+.dba-folder-add {
+	border-top: none;
+	padding-bottom: var(--size-4-2);
+}
+
+.dba-folder-add .setting-item-info {
+	display: none;
+}
+
+.dba-folder-add .setting-item-control {
+	justify-content: flex-start;
+}
+
+.dba-folder-add .search-input-container {
+	flex: 1;
+}
+
+.dba-folder-add .search-input-container input {
+	width: 100%;
+}
+
+.dba-setting-template .setting-item-info {
+	display: none;
+}
+
+.dba-setting-template .setting-item-control textarea {
+	width: 100%;
+	min-height: 12em;
+	font-family: var(--font-monospace);
+	font-size: var(--font-ui-small);
+}
+
+/* ---------- View ---------- */
+
+.dba-view {
+	position: relative;
+	padding: 0;
+	overflow: hidden;
+}
+
+/* The toolbar floats over the diagram, which takes the whole view. The bar itself lets pointer
+   events through (the diagram stays draggable underneath); only its controls catch them. */
+.dba-toolbar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-1);
+	padding: var(--size-4-2);
+	pointer-events: none;
+}
+
+.dba-toolbar > * {
+	pointer-events: auto;
+}
+
+.dba-folder-button {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+	min-width: 0;
+	max-width: 60%;
+	height: var(--input-height);
+	padding: 0 var(--size-4-2) 0 var(--size-4-3);
+	border: var(--border-width) solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	background-color: var(--background-primary);
+	box-shadow: var(--shadow-s);
+	color: var(--text-normal);
+	font-size: var(--font-ui-small);
+	cursor: pointer;
+}
+
+.dba-folder-button:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.dba-folder-button-icon,
+.dba-folder-button-chevron {
+	display: flex;
+	flex-shrink: 0;
+	color: var(--text-muted);
+	--icon-size: var(--icon-s);
+}
+
+.dba-folder-button-label {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.dba-toolbar-button {
+	background-color: var(--background-primary);
+	border: var(--border-width) solid var(--background-modifier-border);
+	box-shadow: var(--shadow-s);
+}
+
+.dba-toolbar-button:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.dba-toolbar > .dba-toolbar-spacer {
+	flex: 1;
+	pointer-events: none;
+}
+
+.dba-body {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+}
+
+.dba-empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	padding: var(--size-4-6);
+	text-align: center;
+	color: var(--text-muted);
+}
+
+.dba-empty-hint {
+	font-size: var(--font-ui-small);
+	color: var(--text-faint);
+}
+
+.dba-hidden {
+	display: none !important;
+}
+
+/* ---------- Diagram ---------- */
+
+.dba-svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	touch-action: none;
+	user-select: none;
+	-webkit-user-select: none;
+	cursor: grab;
+	background-color: var(--background-primary);
+}
+
+.dba-svg.is-panning {
+	cursor: grabbing;
+}
+
+.dba-grid-dot {
+	fill: var(--background-modifier-border);
+}
+
+.dba-table-body {
+	fill: var(--background-primary);
+}
+
+.dba-table-border {
+	fill: none;
+	stroke: var(--background-modifier-border-hover);
+	stroke-width: 1;
+}
+
+.dba-table.is-warning .dba-table-border {
+	stroke: var(--text-warning);
+}
+
+.dba-table-header-bg {
+	fill: var(--dba-header-bg, var(--interactive-accent));
+}
+
+.dba-table-header {
+	cursor: pointer;
+}
+
+.dba-table-name {
+	font-family: var(--font-interface);
+	font-size: 13px;
+	font-weight: var(--font-semibold);
+	fill: var(--dba-header-fg, var(--text-on-accent));
+	dominant-baseline: central;
+}
+
+.dba-table-desc {
+	font-family: var(--font-interface);
+	font-size: 11px;
+	fill: var(--dba-header-fg, var(--text-on-accent));
+	opacity: 0.8;
+	dominant-baseline: central;
+}
+
+.dba-row-bg {
+	fill: transparent;
+}
+
+.dba-row:hover .dba-row-bg {
+	fill: var(--background-modifier-hover);
+}
+
+.dba-row-sep {
+	stroke: var(--background-modifier-border);
+	stroke-width: 1;
+}
+
+.dba-col-icon,
+.dba-col-name {
+	font-family: var(--font-interface);
+	font-size: 12px;
+	fill: var(--text-normal);
+	dominant-baseline: central;
+}
+
+.dba-col-type {
+	font-family: var(--font-monospace);
+	font-size: 11px;
+	fill: var(--text-muted);
+	dominant-baseline: central;
+}
+
+.dba-row.is-error .dba-row-bg {
+	fill: rgba(var(--color-red-rgb), 0.12);
+}
+
+.dba-row.is-error .dba-col-name,
+.dba-row.is-error .dba-col-type {
+	fill: var(--text-error);
+}
+
+.dba-empty-row {
+	fill: var(--text-faint);
+	font-style: italic;
+}
+
+.dba-table.is-dragging {
+	filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
+}
+
+.dba-svg.is-dragging-table,
+.dba-svg.is-dragging-table .dba-table-header {
+	cursor: grabbing;
+}
+
+/* ---------- Relations ---------- */
+
+.dba-edge-line,
+.dba-edge-marker {
+	fill: none;
+	stroke: var(--text-muted);
+	stroke-width: 1.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.dba-edge-marker-circle {
+	fill: var(--background-primary);
+}
+
+/* ---------- Tooltip ---------- */
+
+.dba-tooltip {
+	position: absolute;
+	left: var(--dba-tooltip-x, 0);
+	top: var(--dba-tooltip-y, 0);
+	z-index: var(--layer-tooltip);
+	max-width: min(360px, calc(100% - 16px));
+	padding: var(--size-4-1) var(--size-4-2);
+	border: var(--border-width) solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	background-color: var(--background-secondary);
+	box-shadow: var(--shadow-s);
+	color: var(--text-normal);
+	font-size: var(--font-ui-small);
+	line-height: 1.4;
+	pointer-events: none;
+}
+
+.dba-tooltip-line:first-child {
+	font-family: var(--font-monospace);
+}
+
+.dba-tooltip-line + .dba-tooltip-line {
+	margin-top: 2px;
+	font-family: var(--font-interface);
+	color: var(--text-muted);
+}
+
+.dba-row {
+	cursor: pointer;
+}
+
+/* ---------- Modals ---------- */
+
+.dba-modal-hint {
+	margin-top: 0;
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+.dba-modal-error {
+	color: var(--text-error);
+	font-size: var(--font-ui-small);
+}
+
+/* ---------- Mobile ---------- */
+
+.is-mobile .dba-toolbar {
+	gap: var(--size-4-2);
+}
+
+.is-mobile .dba-folder-button {
+	min-height: 44px;
+}
+
+.is-mobile .dba-toolbar-button {
+	min-width: 44px;
+	min-height: 44px;
+	justify-content: center;
+}
+
+.is-mobile .dba-folder-handle {
+	min-width: 32px;
+	min-height: 44px;
+	align-items: center;
+	justify-content: center;
+}
+
+.is-mobile .dba-folder-item .clickable-icon {
+	min-width: 44px;
+	min-height: 44px;
+	justify-content: center;
+}
+
+/* ---------- Large diagrams ---------- */
+
+/* Lines and borders keep a readable width at any zoom level. */
+.dba-edge-line,
+.dba-edge-marker,
+.dba-table-border {
+	vector-effect: non-scaling-stroke;
+}
+
+.dba-svg.hide-grid .dba-grid {
+	display: none;
+}
+
+.dba-busy {
+	position: absolute;
+	top: 56px; /* below the floating toolbar */
+	left: 50%;
+	transform: translateX(-50%);
+	padding: var(--size-4-1) var(--size-4-3);
+	border-radius: var(--radius-m);
+	background-color: var(--background-secondary);
+	box-shadow: var(--shadow-s);
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	pointer-events: none;
+}
