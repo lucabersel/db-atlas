@@ -143,7 +143,9 @@ npm run bench      # layout/routing timings on generated schemas (100 to 2000 ta
 npm run gen:perf -- 1000   # generate test-vault/Perf1000 with 1000 tables
 ```
 
-`test-vault/` is a ready-made vault with example schemas (`Gestionale`) and one note per error case (`Casi_errore`).
+`test-vault/` is a local, git-ignored vault: open it in Obsidian and enable the plugin to try your changes (`npm run dev` keeps its copy of the plugin up to date).
+
+The full specification of the plugin's behaviour and source layout is in [PROJECT.md](PROJECT.md) (Italian).
 
 Releasing: update the version with `npm version <patch|minor|major>` (updates `manifest.json` and `versions.json`), push the commit and the tag; the GitHub workflow builds and creates a draft release with `main.js`, `manifest.json` and `styles.css`.
 

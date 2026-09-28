@@ -1,1 +1,0 @@
-Leggi PROJECT.md e dev_plan.md. Esegui solo la prossima fase non completata e fermati.
